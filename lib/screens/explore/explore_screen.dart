@@ -95,7 +95,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(

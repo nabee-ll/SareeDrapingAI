@@ -57,7 +57,8 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.primary,
+              AppColors.secondaryDark,
+              Color(0xFF1A0810),
               AppColors.primaryDark,
             ],
           ),
@@ -76,12 +77,12 @@ class _SplashScreenState extends State<SplashScreen>
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            blurRadius: 20,
+                            color: AppColors.primary.withValues(alpha: 0.4),
+                            blurRadius: 30,
                             offset: const Offset(0, 10),
                           ),
                         ],
@@ -89,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
                       child: const Icon(
                         Icons.auto_awesome,
                         size: 60,
-                        color: AppColors.primary,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -124,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.goldLight,
+                        AppColors.primaryLight,
                       ),
                     ),
                   ),

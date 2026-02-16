@@ -89,7 +89,7 @@ class TutorialsScreen extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.divider),
       ),

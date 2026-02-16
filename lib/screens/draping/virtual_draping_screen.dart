@@ -9,7 +9,7 @@ class VirtualDrapingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Virtual Draping'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -25,8 +25,8 @@ class VirtualDrapingScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.info.withValues(alpha: 0.2),
-                      AppColors.primary.withValues(alpha: 0.2),
+                      AppColors.primary.withValues(alpha: 0.15),
+                      AppColors.secondary.withValues(alpha: 0.1),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(60),

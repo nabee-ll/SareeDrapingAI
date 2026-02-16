@@ -84,7 +84,7 @@ class _RegionalStylesScreenState extends State<RegionalStylesScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.05)
-              : Colors.white,
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,
@@ -178,7 +178,7 @@ class _RegionalStylesScreenState extends State<RegionalStylesScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(

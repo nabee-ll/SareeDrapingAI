@@ -72,8 +72,8 @@ class _VsdUploadScreenState extends State<VsdUploadScreen> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.info, Color(0xFF0D47A1)],
+                    gradient: LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -260,7 +260,7 @@ class _VsdUploadScreenState extends State<VsdUploadScreen> {
           decoration: BoxDecoration(
             color: image != null
                 ? AppColors.primary.withValues(alpha: 0.05)
-                : Colors.white,
+                : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: image != null ? AppColors.primary : AppColors.divider,

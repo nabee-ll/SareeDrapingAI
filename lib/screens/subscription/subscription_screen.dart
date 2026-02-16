@@ -94,7 +94,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: isSelected ? tierColor.withValues(alpha: 0.08) : Colors.white,
+            color: isSelected ? tierColor.withValues(alpha: 0.08) : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected ? tierColor : AppColors.divider,

@@ -90,13 +90,15 @@ class _LoginScreenState extends State<LoginScreen>
           height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
               colors: [AppColors.primary, AppColors.primaryDark],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.3),
-                blurRadius: 12,
+                color: AppColors.primary.withValues(alpha: 0.25),
+                blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
             ],
@@ -383,7 +385,7 @@ class _LoginScreenState extends State<LoginScreen>
                 _socialButton(
                   icon: Icons.apple,
                   label: 'Apple',
-                  color: Colors.black,
+                  color: Colors.white,
                   onTap: () async {
                     final success = await auth.loginWithSocial('Apple');
                     if (success && mounted) {
@@ -414,7 +416,7 @@ class _LoginScreenState extends State<LoginScreen>
         decoration: BoxDecoration(
           border: Border.all(color: AppColors.divider),
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

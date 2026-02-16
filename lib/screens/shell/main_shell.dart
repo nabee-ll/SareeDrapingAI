@@ -20,27 +20,28 @@ class MainShell extends StatelessWidget {
             initialLocation: index == navigationShell.currentIndex,
           );
         },
-        backgroundColor: Colors.white,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.15),
+        backgroundColor: AppColors.surface,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.25),
+        surfaceTintColor: Colors.transparent,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home, color: AppColors.primary),
+            icon: Icon(Icons.home_outlined, color: AppColors.textHint),
+            selectedIcon: Icon(Icons.home, color: AppColors.primaryLight),
             label: AppStrings.home,
           ),
           NavigationDestination(
-            icon: Icon(Icons.explore_outlined),
-            selectedIcon: Icon(Icons.explore, color: AppColors.primary),
+            icon: Icon(Icons.explore_outlined, color: AppColors.textHint),
+            selectedIcon: Icon(Icons.explore, color: AppColors.primaryLight),
             label: AppStrings.explore,
           ),
           NavigationDestination(
-            icon: Icon(Icons.checkroom_outlined),
-            selectedIcon: Icon(Icons.checkroom, color: AppColors.primary),
+            icon: Icon(Icons.checkroom_outlined, color: AppColors.textHint),
+            selectedIcon: Icon(Icons.checkroom, color: AppColors.primaryLight),
             label: AppStrings.myDrapes,
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outlined),
-            selectedIcon: Icon(Icons.person, color: AppColors.primary),
+            icon: Icon(Icons.person_outlined, color: AppColors.textHint),
+            selectedIcon: Icon(Icons.person, color: AppColors.primaryLight),
             label: AppStrings.profile,
           ),
         ],

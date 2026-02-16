@@ -9,7 +9,7 @@ class MyDrapesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Drapes'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),

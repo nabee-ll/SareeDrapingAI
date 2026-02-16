@@ -71,7 +71,7 @@ class DesignPatternsScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -205,7 +205,7 @@ class DesignPatternsScreen extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColors.divider),
         ),

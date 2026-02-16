@@ -71,13 +71,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
               colors: [AppColors.primary, AppColors.primaryDark],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.3),
-                blurRadius: 12,
+                color: AppColors.primary.withValues(alpha: 0.25),
+                blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
             ],
