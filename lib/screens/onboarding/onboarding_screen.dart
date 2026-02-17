@@ -145,17 +145,19 @@ class _LanguageStep extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Expanded(
-                child: ListView.builder(
-                  itemCount: OnboardingProvider.languages.length,
+                child: onboarding.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                  itemCount: onboarding.languages.length,
                   itemBuilder: (context, index) {
-                    final lang = OnboardingProvider.languages[index];
+                    final lang = onboarding.languages[index];
                     final isSelected =
                         onboarding.selectedLanguage == lang['code'];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: InkWell(
                         onTap: () =>
-                            onboarding.selectLanguage(lang['code']!),
+                            onboarding.selectLanguage(lang['code'] ?? ''),
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -180,7 +182,7 @@ class _LanguageStep extends StatelessWidget {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      lang['name']!,
+                                      lang['name'] ?? '',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: isSelected
@@ -192,7 +194,7 @@ class _LanguageStep extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      lang['native']!,
+                                      lang['native'] ?? '',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: isSelected
@@ -244,20 +246,22 @@ class _RegionStep extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Expanded(
-                child: GridView.builder(
+                child: onboarding.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                     childAspectRatio: 1.5,
                   ),
-                  itemCount: OnboardingProvider.regions.length,
+                  itemCount: onboarding.regions.length,
                   itemBuilder: (context, index) {
-                    final region = OnboardingProvider.regions[index];
+                    final region = onboarding.regions[index];
                     final isSelected =
                         onboarding.selectedRegion == region['id'];
                     return InkWell(
-                      onTap: () => onboarding.selectRegion(region['id']!),
+                      onTap: () => onboarding.selectRegion(region['id'] ?? ''),
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
                         decoration: BoxDecoration(
@@ -276,12 +280,12 @@ class _RegionStep extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              region['icon']!,
+                              region['icon'] ?? '',
                               style: const TextStyle(fontSize: 32),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              region['name']!,
+                              region['name'] ?? '',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 14,
@@ -330,17 +334,19 @@ class _BodyTypeStep extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Expanded(
-                child: ListView.builder(
-                  itemCount: OnboardingProvider.bodyTypes.length,
+                child: onboarding.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                  itemCount: onboarding.bodyTypes.length,
                   itemBuilder: (context, index) {
-                    final body = OnboardingProvider.bodyTypes[index];
+                    final body = onboarding.bodyTypes[index];
                     final isSelected =
                         onboarding.selectedBodyType == body['id'];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: InkWell(
                         onTap: () =>
-                            onboarding.selectBodyType(body['id']!),
+                            onboarding.selectBodyType(body['id'] ?? ''),
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
                           padding: const EdgeInsets.all(20),
@@ -381,7 +387,7 @@ class _BodyTypeStep extends StatelessWidget {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      body['name']!,
+                                      body['name'] ?? '',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -391,7 +397,7 @@ class _BodyTypeStep extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      body['description']!,
+                                      body['description'] ?? '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: isSelected
@@ -443,17 +449,19 @@ class _ExperienceStep extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: ListView.builder(
-                  itemCount: OnboardingProvider.experienceLevels.length,
+                child: onboarding.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                  itemCount: onboarding.experienceLevels.length,
                   itemBuilder: (context, index) {
-                    final exp = OnboardingProvider.experienceLevels[index];
+                    final exp = onboarding.experienceLevels[index];
                     final isSelected =
                         onboarding.selectedExperience == exp['id'];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: InkWell(
                         onTap: () =>
-                            onboarding.selectExperience(exp['id']!),
+                            onboarding.selectExperience(exp['id'] ?? ''),
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
                           padding: const EdgeInsets.all(24),
@@ -472,7 +480,7 @@ class _ExperienceStep extends StatelessWidget {
                           child: Row(
                             children: [
                               Text(
-                                exp['icon']!,
+                                exp['icon'] ?? '',
                                 style: const TextStyle(fontSize: 36),
                               ),
                               const SizedBox(width: 20),
@@ -482,7 +490,7 @@ class _ExperienceStep extends StatelessWidget {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      exp['name']!,
+                                      exp['name'] ?? '',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
@@ -493,7 +501,7 @@ class _ExperienceStep extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      exp['description']!,
+                                      exp['description'] ?? '',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: isSelected

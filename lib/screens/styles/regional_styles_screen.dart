@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/regional_style.dart';
+import '../../providers/data_provider.dart';
 
 class RegionalStylesScreen extends StatefulWidget {
   const RegionalStylesScreen({super.key});
@@ -15,7 +17,9 @@ class _RegionalStylesScreenState extends State<RegionalStylesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final styles = RegionalStyle.sampleStyles;
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, _) {
+        final styles = dataProvider.regionalStyles;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +28,9 @@ class _RegionalStylesScreenState extends State<RegionalStylesScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Column(
+      body: dataProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -62,9 +68,11 @@ class _RegionalStylesScreenState extends State<RegionalStylesScreen> {
               },
             ),
           ),
-          if (_selectedStyleId != null) _buildSelectedDetail(context),
+          if (_selectedStyleId != null) _buildSelectedDetail(context, dataProvider),
         ],
       ),
+    );
+      },
     );
   }
 
@@ -170,8 +178,8 @@ class _RegionalStylesScreenState extends State<RegionalStylesScreen> {
     );
   }
 
-  Widget _buildSelectedDetail(BuildContext context) {
-    final style = RegionalStyle.sampleStyles
+  Widget _buildSelectedDetail(BuildContext context, DataProvider dataProvider) {
+    final style = dataProvider.regionalStyles
         .firstWhere((s) => s.id == _selectedStyleId);
 
     return Container(

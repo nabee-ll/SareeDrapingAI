@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/design_pattern_model.dart';
 import '../models/store_model.dart';
+import '../services/firestore_service.dart';
 
 class StoreProvider extends ChangeNotifier {
+  final FirestoreService _firestoreService = FirestoreService();
+
   List<StoreModel> _stores = [];
   List<DesignPatternModel> _designPatterns = [];
   StoreModel? _selectedStore;
@@ -25,67 +28,31 @@ class StoreProvider extends ChangeNotifier {
   XFile? get pleatsImage => _pleatsImage;
 
   StoreProvider() {
-    _loadSampleData();
+    loadData();
   }
 
-  void _loadSampleData() {
-    _stores = [
-      StoreModel(
-        id: '1',
-        tenantId: 'tenant_1',
-        name: 'Silk Palace',
-        address: '123 MG Road',
-        city: 'Bangalore',
-        state: 'Karnataka',
-        phone: '+91 9876543210',
-        email: 'info@silkpalace.com',
-      ),
-      StoreModel(
-        id: '2',
-        tenantId: 'tenant_1',
-        name: 'Royal Sarees',
-        address: '456 Anna Nagar',
-        city: 'Chennai',
-        state: 'Tamil Nadu',
-        phone: '+91 9876543211',
-        email: 'info@royalsarees.com',
-      ),
-    ];
+  /// Load stores and design patterns from Firestore
+  Future<void> loadData({String? tenantId}) async {
+    _isLoading = true;
+    notifyListeners();
 
-    _designPatterns = [
-      DesignPatternModel(
-        id: '1',
-        tenantId: 'tenant_1',
-        storeId: '1',
-        name: 'Kanchipuram Gold Border',
-        description: 'Traditional gold zari border pattern',
-        category: 'Kanchipuram',
-        price: 15000,
-        createdAt: DateTime.now(),
-      ),
-      DesignPatternModel(
-        id: '2',
-        tenantId: 'tenant_1',
-        storeId: '1',
-        name: 'Banarasi Silk Pallu',
-        description: 'Intricate Banarasi pallu with floral motifs',
-        category: 'Banarasi',
-        price: 22000,
-        createdAt: DateTime.now(),
-      ),
-      DesignPatternModel(
-        id: '3',
-        tenantId: 'tenant_1',
-        storeId: '2',
-        name: 'Mysore Silk Classic',
-        description: 'Classic Mysore silk with checked pattern',
-        category: 'Mysore',
-        price: 8000,
-        createdAt: DateTime.now(),
-      ),
-    ];
+    try {
+      final results = await Future.wait([
+        _firestoreService.getStores(tenantId: tenantId),
+        _firestoreService.getDesignPatterns(tenantId: tenantId),
+      ]);
 
-    _selectedStore = _stores.isNotEmpty ? _stores[0] : null;
+      _stores = results[0] as List<StoreModel>;
+      _designPatterns = results[1] as List<DesignPatternModel>;
+      _selectedStore = _stores.isNotEmpty ? _stores[0] : null;
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = 'Failed to load data: $e';
+      notifyListeners();
+    }
   }
 
   void selectStore(StoreModel store) {
@@ -102,11 +69,12 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 1));
-
+      final id = await _firestoreService.addDesignPattern(design.copyWith(
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ));
       final newDesign = design.copyWith(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: id,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -125,12 +93,11 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 1));
-
+      final updated = design.copyWith(updatedAt: DateTime.now());
+      await _firestoreService.updateDesignPattern(updated);
       final index = _designPatterns.indexWhere((d) => d.id == design.id);
       if (index != -1) {
-        _designPatterns[index] = design.copyWith(updatedAt: DateTime.now());
+        _designPatterns[index] = updated;
       }
       _isLoading = false;
       notifyListeners();
@@ -146,9 +113,7 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // TODO: Replace with actual API call
-      await Future.delayed(const Duration(seconds: 1));
-
+      await _firestoreService.deleteDesignPattern(id);
       _designPatterns.removeWhere((d) => d.id == id);
       _isLoading = false;
       notifyListeners();
@@ -164,10 +129,11 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
-
+      final id = await _firestoreService.addStore(store.copyWith(
+        createdAt: DateTime.now(),
+      ));
       final newStore = store.copyWith(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: id,
         createdAt: DateTime.now(),
       );
       _stores.add(newStore);

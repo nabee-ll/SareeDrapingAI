@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/subscription_plan.dart';
+import '../../providers/data_provider.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -15,7 +17,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final plans = SubscriptionPlan.allPlans;
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, _) {
+        final plans = dataProvider.subscriptionPlans;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +28,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: dataProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,6 +79,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 

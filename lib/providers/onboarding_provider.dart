@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import '../services/firestore_service.dart';
 
 class OnboardingProvider extends ChangeNotifier {
+  final FirestoreService _firestoreService = FirestoreService();
+
   String? _selectedLanguage;
   String? _selectedRegion;
   String? _selectedBodyType;
   String? _selectedExperience;
   int _currentStep = 0;
   bool _onboardingComplete = false;
+  bool _isLoading = false;
+
+  List<Map<String, dynamic>> _languages = [];
+  List<Map<String, dynamic>> _regions = [];
+  List<Map<String, dynamic>> _bodyTypes = [];
+  List<Map<String, dynamic>> _experienceLevels = [];
 
   String? get selectedLanguage => _selectedLanguage;
   String? get selectedRegion => _selectedRegion;
@@ -14,56 +23,38 @@ class OnboardingProvider extends ChangeNotifier {
   String? get selectedExperience => _selectedExperience;
   int get currentStep => _currentStep;
   bool get onboardingComplete => _onboardingComplete;
+  bool get isLoading => _isLoading;
 
-  static const List<Map<String, String>> languages = [
-    {'code': 'en', 'name': 'English', 'native': 'English'},
-    {'code': 'hi', 'name': 'Hindi', 'native': 'हिन्दी'},
-    {'code': 'ta', 'name': 'Tamil', 'native': 'தமிழ்'},
-    {'code': 'te', 'name': 'Telugu', 'native': 'తెలుగు'},
-    {'code': 'kn', 'name': 'Kannada', 'native': 'ಕನ್ನಡ'},
-    {'code': 'ml', 'name': 'Malayalam', 'native': 'മലയാളം'},
-    {'code': 'mr', 'name': 'Marathi', 'native': 'मराठी'},
-    {'code': 'bn', 'name': 'Bengali', 'native': 'বাংলা'},
-    {'code': 'gu', 'name': 'Gujarati', 'native': 'ગુજરાતી'},
-    {'code': 'pa', 'name': 'Punjabi', 'native': 'ਪੰਜਾਬੀ'},
-  ];
+  List<Map<String, dynamic>> get languages => _languages;
+  List<Map<String, dynamic>> get regions => _regions;
+  List<Map<String, dynamic>> get bodyTypes => _bodyTypes;
+  List<Map<String, dynamic>> get experienceLevels => _experienceLevels;
 
-  static const List<Map<String, String>> regions = [
-    {'id': 'north', 'name': 'North India', 'icon': '🏔️'},
-    {'id': 'south', 'name': 'South India', 'icon': '🌴'},
-    {'id': 'east', 'name': 'East India', 'icon': '🌿'},
-    {'id': 'west', 'name': 'West India', 'icon': '🏖️'},
-    {'id': 'central', 'name': 'Central India', 'icon': '🏛️'},
-    {'id': 'northeast', 'name': 'North East India', 'icon': '⛰️'},
-  ];
+  /// Load all onboarding options from Firestore
+  Future<void> loadOptions() async {
+    _isLoading = true;
+    notifyListeners();
 
-  static const List<Map<String, String>> bodyTypes = [
-    {'id': 'petite', 'name': 'Petite', 'description': 'Under 5\'2"'},
-    {'id': 'average', 'name': 'Average', 'description': '5\'2" - 5\'6"'},
-    {'id': 'tall', 'name': 'Tall', 'description': 'Above 5\'6"'},
-    {'id': 'plus', 'name': 'Plus Size', 'description': 'Curvy body type'},
-  ];
+    try {
+      final results = await Future.wait([
+        _firestoreService.getOnboardingOptions('languages'),
+        _firestoreService.getOnboardingOptions('regions'),
+        _firestoreService.getOnboardingOptions('body_types'),
+        _firestoreService.getOnboardingOptions('experience_levels'),
+      ]);
 
-  static const List<Map<String, String>> experienceLevels = [
-    {
-      'id': 'beginner',
-      'name': 'Beginner',
-      'description': 'New to saree draping',
-      'icon': '🌱'
-    },
-    {
-      'id': 'intermediate',
-      'name': 'Intermediate',
-      'description': 'Know basics, want to learn more',
-      'icon': '🌿'
-    },
-    {
-      'id': 'advanced',
-      'name': 'Advanced',
-      'description': 'Experienced, exploring new styles',
-      'icon': '🌳'
-    },
-  ];
+      _languages = results[0];
+      _regions = results[1];
+      _bodyTypes = results[2];
+      _experienceLevels = results[3];
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   void selectLanguage(String languageCode) {
     _selectedLanguage = languageCode;

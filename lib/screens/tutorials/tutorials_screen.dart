@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/tutorial_model.dart';
+import '../../providers/data_provider.dart';
 
 class TutorialsScreen extends StatelessWidget {
   const TutorialsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, _) {
+        final tutorialsByCategory = dataProvider.tutorialsByCategory;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tutorials'),
@@ -13,12 +20,13 @@ class TutorialsScreen extends StatelessWidget {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Padding(
+      body: dataProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Difficulty filter
             Text(
               'Step-by-Step Video Tutorials',
               style: Theme.of(context).textTheme.headlineMedium,
@@ -32,50 +40,43 @@ class TutorialsScreen extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
-                  _tutorialCategory(
-                    context,
-                    title: 'Beginner Tutorials',
-                    subtitle: 'Start your draping journey',
-                    icon: Icons.school,
-                    color: AppColors.success,
-                    tutorials: [
-                      _TutorialItem('Nivi Drape Basics', '12 min', 8),
-                      _TutorialItem('Understanding Fabric', '8 min', 5),
-                      _TutorialItem('Pleating 101', '10 min', 6),
-                    ],
-                  ),
+                  if (tutorialsByCategory.containsKey('Beginner Tutorials'))
+                    _tutorialCategory(
+                      context,
+                      title: 'Beginner Tutorials',
+                      subtitle: 'Start your draping journey',
+                      icon: Icons.school,
+                      color: AppColors.success,
+                      tutorials: tutorialsByCategory['Beginner Tutorials']!,
+                    ),
                   const SizedBox(height: 16),
-                  _tutorialCategory(
-                    context,
-                    title: 'Intermediate Tutorials',
-                    subtitle: 'Expand your skills',
-                    icon: Icons.trending_up,
-                    color: AppColors.warning,
-                    tutorials: [
-                      _TutorialItem('Bengali Style Complete', '18 min', 12),
-                      _TutorialItem('Gujarati Seedha Pallu', '15 min', 9),
-                      _TutorialItem('Coorgi Drape', '16 min', 10),
-                    ],
-                  ),
+                  if (tutorialsByCategory.containsKey('Intermediate Tutorials'))
+                    _tutorialCategory(
+                      context,
+                      title: 'Intermediate Tutorials',
+                      subtitle: 'Expand your skills',
+                      icon: Icons.trending_up,
+                      color: AppColors.warning,
+                      tutorials: tutorialsByCategory['Intermediate Tutorials']!,
+                    ),
                   const SizedBox(height: 16),
-                  _tutorialCategory(
-                    context,
-                    title: 'Advanced Tutorials',
-                    subtitle: 'Master complex styles',
-                    icon: Icons.star,
-                    color: AppColors.error,
-                    tutorials: [
-                      _TutorialItem('Maharashtrian Nauvari', '25 min', 15),
-                      _TutorialItem('Madisar (9-yard)', '30 min', 18),
-                      _TutorialItem('Bridal Draping', '28 min', 16),
-                    ],
-                  ),
+                  if (tutorialsByCategory.containsKey('Advanced Tutorials'))
+                    _tutorialCategory(
+                      context,
+                      title: 'Advanced Tutorials',
+                      subtitle: 'Master complex styles',
+                      icon: Icons.star,
+                      color: AppColors.error,
+                      tutorials: tutorialsByCategory['Advanced Tutorials']!,
+                    ),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+      },
     );
   }
 
@@ -85,7 +86,7 @@ class TutorialsScreen extends StatelessWidget {
     required String subtitle,
     required IconData icon,
     required Color color,
-    required List<_TutorialItem> tutorials,
+    required List<TutorialModel> tutorials,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -172,12 +173,4 @@ class TutorialsScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _TutorialItem {
-  final String title;
-  final String duration;
-  final int steps;
-
-  _TutorialItem(this.title, this.duration, this.steps);
 }

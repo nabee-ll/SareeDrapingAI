@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
-import '../../models/regional_style.dart';
+import '../../providers/data_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -325,7 +326,12 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRegionalStylesPreview(BuildContext context) {
-    final styles = RegionalStyle.sampleStyles.take(4).toList();
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, _) {
+        final styles = dataProvider.getStylesPreview(4);
+        if (dataProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,9 +423,18 @@ class HomeScreen extends StatelessWidget {
         ),
       ],
     );
+      },
+    );
   }
 
   Widget _buildRecentTutorials(BuildContext context) {
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, _) {
+        final tutorials = dataProvider.tutorials.take(3).toList();
+        if (dataProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -432,25 +447,7 @@ class HomeScreen extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 12),
-          ...List.generate(3, (index) {
-            final tutorials = [
-              {
-                'title': 'Nivi Drape - Beginner',
-                'duration': '12 min',
-                'difficulty': 'Beginner'
-              },
-              {
-                'title': 'Bengali Style - Complete Guide',
-                'duration': '18 min',
-                'difficulty': 'Intermediate'
-              },
-              {
-                'title': 'Maharashtrian Nauvari',
-                'duration': '25 min',
-                'difficulty': 'Advanced'
-              },
-            ];
-            final tutorial = tutorials[index];
+          ...tutorials.map((tutorial) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Container(
@@ -478,7 +475,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            tutorial['title']!,
+                            tutorial.title,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
@@ -491,7 +488,7 @@ class HomeScreen extends StatelessWidget {
                               const Icon(Icons.access_time,
                                   size: 14, color: AppColors.textHint),
                               const SizedBox(width: 4),
-                              Text(tutorial['duration']!,
+                              Text(tutorial.duration,
                                   style: const TextStyle(
                                       fontSize: 12,
                                       color: AppColors.textSecondary)),
@@ -503,7 +500,9 @@ class HomeScreen extends StatelessWidget {
                                   color: AppColors.surfaceVariant,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text(tutorial['difficulty']!,
+                                child: Text(
+                                    tutorial.difficulty[0].toUpperCase() +
+                                        tutorial.difficulty.substring(1),
                                     style: const TextStyle(
                                       fontSize: 10,
                                       color: AppColors.textSecondary,
@@ -523,6 +522,8 @@ class HomeScreen extends StatelessWidget {
           }),
         ],
       ),
+    );
+      },
     );
   }
 }

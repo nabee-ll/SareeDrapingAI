@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/regional_style.dart';
+import '../../providers/data_provider.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -15,10 +17,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final styles = RegionalStyle.sampleStyles;
-    final filtered = _selectedDifficulty == 'all'
-        ? styles
-        : styles.where((s) => s.difficulty == _selectedDifficulty).toList();
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, _) {
+        final filtered = dataProvider.getStylesByDifficulty(_selectedDifficulty);
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +28,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Column(
+      body: dataProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         children: [
           // Filter chips
           Padding(
@@ -63,6 +66,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 
