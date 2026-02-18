@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/credit_model.dart';
 import '../models/regional_style.dart';
 import '../models/subscription_plan.dart';
 import '../models/tutorial_model.dart';
@@ -12,12 +13,14 @@ class DataProvider extends ChangeNotifier {
   List<RegionalStyle> _regionalStyles = [];
   List<TutorialModel> _tutorials = [];
   List<SubscriptionPlan> _subscriptionPlans = [];
+  List<CreditPack> _creditPacks = kCreditPacks; // fallback to const defaults
   bool _isLoading = false;
   String? _errorMessage;
 
   List<RegionalStyle> get regionalStyles => _regionalStyles;
   List<TutorialModel> get tutorials => _tutorials;
   List<SubscriptionPlan> get subscriptionPlans => _subscriptionPlans;
+  List<CreditPack> get creditPacks => _creditPacks;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -32,11 +35,20 @@ class DataProvider extends ChangeNotifier {
         _firestoreService.getRegionalStyles(),
         _firestoreService.getTutorials(),
         _firestoreService.getSubscriptionPlans(),
+        _firestoreService.getCreditPacks(),
+        _firestoreService.getCreditsConfig(),
       ]);
 
       _regionalStyles = results[0] as List<RegionalStyle>;
       _tutorials = results[1] as List<TutorialModel>;
       _subscriptionPlans = results[2] as List<SubscriptionPlan>;
+
+      final packs = results[3] as List<CreditPack>;
+      if (packs.isNotEmpty) _creditPacks = packs;
+
+      // Apply credit costs from Firestore config, overriding static defaults
+      final config = results[4] as Map<String, dynamic>;
+      if (config.isNotEmpty) CreditCost.updateFromConfig(config);
 
       _isLoading = false;
       notifyListeners();

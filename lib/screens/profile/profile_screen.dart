@@ -57,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
                   context,
                   icon: Icons.card_membership,
                   title: 'Subscription',
-                  subtitle: 'Free Plan',
+                  subtitle: _planLabel(auth.user?.subscriptionTier),
                   onTap: () => context.push('/home/subscriptions'),
                 ),
                 _profileTile(
@@ -71,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
                   context,
                   icon: Icons.language,
                   title: 'Language',
-                  subtitle: 'English',
+                  subtitle: auth.user?.language ?? 'English',
                   onTap: () {},
                 ),
                 _profileTile(
@@ -117,6 +117,15 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _planLabel(String? tier) {
+    return switch (tier) {
+      'basic' => 'Basic Plan',
+      'premium' => 'Premium Plan',
+      'annual' => 'Annual Premium',
+      _ => 'Free Plan',
+    };
   }
 
   Widget _profileTile(

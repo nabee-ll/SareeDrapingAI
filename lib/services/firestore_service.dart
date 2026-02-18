@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/credit_model.dart';
 import '../models/design_pattern_model.dart';
 import '../models/regional_style.dart';
 import '../models/store_model.dart';
@@ -17,6 +18,9 @@ class FirestoreService {
   static const String _stores = 'stores';
   static const String _designPatterns = 'design_patterns';
   static const String _users = 'users';
+  static const String _creditPacks = 'credit_packs';
+  static const String _appConfig = 'app_config';
+  static const String _transactions = 'credit_transactions';
 
   // ══════════════════════════════════════════════════════════
   // REGIONAL STYLES
@@ -174,5 +178,63 @@ class FirestoreService {
   Future<void> updateUser(UserModel user) async {
     if (user.id == null) return;
     await _db.collection(_users).doc(user.id).update(user.toJson());
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // CREDIT PACKS
+  // ══════════════════════════════════════════════════════════
+
+  Future<List<CreditPack>> getCreditPacks() async {
+    final snapshot = await _db
+        .collection(_creditPacks)
+        .orderBy('sort_order')
+        .get();
+    return snapshot.docs
+        .map((doc) => CreditPack.fromJson(doc.data()))
+        .toList();
+  }
+
+  Future<void> addCreditPack(CreditPack pack) async {
+    await _db.collection(_creditPacks).doc(pack.id).set(pack.toJson());
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // APP CONFIG
+  // ══════════════════════════════════════════════════════════
+
+  /// Returns the 'credits' config document (credit costs per feature).
+  Future<Map<String, dynamic>> getCreditsConfig() async {
+    final doc = await _db.collection(_appConfig).doc('credits').get();
+    if (!doc.exists) return {};
+    return doc.data() ?? {};
+  }
+
+  Future<void> setCreditsConfig(Map<String, dynamic> data) async {
+    await _db.collection(_appConfig).doc('credits').set(data);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // CREDIT TRANSACTIONS
+  // ══════════════════════════════════════════════════════════
+
+  Future<void> saveTransaction(CreditTransaction tx) async {
+    await _db.collection(_transactions).doc(tx.id).set(tx.toJson());
+  }
+
+  Future<List<CreditTransaction>> getTransactions(String userId) async {
+    final snapshot = await _db
+        .collection(_transactions)
+        .where('user_id', isEqualTo: userId)
+        .orderBy('created_at', descending: true)
+        .limit(50)
+        .get();
+    return snapshot.docs
+        .map((doc) => CreditTransaction.fromJson(doc.data()))
+        .toList();
+  }
+
+  /// Update only the credits field on a user document.
+  Future<void> updateUserCredits(String userId, int credits) async {
+    await _db.collection(_users).doc(userId).update({'credits': credits});
   }
 }

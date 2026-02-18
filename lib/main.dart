@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_strings.dart';
 import 'core/constants/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
+import 'providers/credit_provider.dart';
 import 'providers/data_provider.dart';
 import 'providers/onboarding_provider.dart';
 import 'providers/store_provider.dart';
@@ -12,7 +14,9 @@ import 'services/data_seeder.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Seed Firestore with initial data (runs only once)
   await DataSeeder().seedIfNeeded();
@@ -28,6 +32,16 @@ class SareeDrapingApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, CreditProvider>(
+          create: (_) => CreditProvider(),
+          update: (_, auth, credits) {
+            final provider = credits ?? CreditProvider();
+            if (auth.isAuthenticated && auth.user?.id != null) {
+              provider.loadForUser(auth.user!.id!);
+            }
+            return provider;
+          },
+        ),
         ChangeNotifierProvider(create: (_) {
           final provider = DataProvider();
           provider.loadAll();

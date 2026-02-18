@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/credit_model.dart';
 import '../models/regional_style.dart';
 import '../models/subscription_plan.dart';
 import '../models/tutorial_model.dart';
@@ -14,7 +15,11 @@ class DataSeeder {
 
   Future<void> seedIfNeeded() async {
     final metaDoc = await _db.collection('_meta').doc('seeded').get();
-    if (metaDoc.exists) return; // Already seeded
+    if (metaDoc.exists) {
+      // Even if already seeded, ensure newer collections exist
+      await _ensureCreditData();
+      return;
+    }
 
     await _seedRegionalStyles();
     await _seedTutorials();
@@ -22,11 +27,22 @@ class DataSeeder {
     await _seedOnboardingOptions();
     await _seedSampleStores();
     await _seedSampleDesignPatterns();
+    await _seedCreditPacks();
+    await _seedAppConfig();
 
     // Mark as seeded
     await _db.collection('_meta').doc('seeded').set({
       'seeded_at': FieldValue.serverTimestamp(),
     });
+  }
+
+  /// Ensures credit_packs and app_config exist (idempotent).
+  Future<void> _ensureCreditData() async {
+    final packsSnap = await _db.collection('credit_packs').limit(1).get();
+    if (packsSnap.docs.isEmpty) await _seedCreditPacks();
+
+    final configDoc = await _db.collection('app_config').doc('credits').get();
+    if (!configDoc.exists) await _seedAppConfig();
   }
 
   Future<void> _seedRegionalStyles() async {
@@ -394,5 +410,57 @@ class DataSeeder {
           .doc(design.id)
           .set(design.toJson());
     }
+  }
+
+  Future<void> _seedCreditPacks() async {
+    final packs = [
+      const CreditPack(
+        id: 'starter',
+        name: 'Starter',
+        credits: 10,
+        priceInPaise: 4900,
+        bonus: '',
+        isBestValue: false,
+        sortOrder: 1,
+      ),
+      const CreditPack(
+        id: 'popular',
+        name: 'Popular',
+        credits: 50,
+        priceInPaise: 19900,
+        bonus: '+5 Bonus',
+        isBestValue: false,
+        sortOrder: 2,
+      ),
+      const CreditPack(
+        id: 'pro',
+        name: 'Pro',
+        credits: 120,
+        priceInPaise: 39900,
+        bonus: '+20 Bonus',
+        isBestValue: true,
+        sortOrder: 3,
+      ),
+      const CreditPack(
+        id: 'ultimate',
+        name: 'Ultimate',
+        credits: 300,
+        priceInPaise: 79900,
+        bonus: '+50 Bonus',
+        isBestValue: false,
+        sortOrder: 4,
+      ),
+    ];
+
+    for (final pack in packs) {
+      await _firestoreService.addCreditPack(pack);
+    }
+  }
+
+  Future<void> _seedAppConfig() async {
+    await _firestoreService.setCreditsConfig({
+      'ai_draping_cost': 5,
+      'stylish_look_cost': 2,
+    });
   }
 }

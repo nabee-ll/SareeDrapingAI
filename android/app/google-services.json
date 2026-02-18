@@ -12,7 +12,20 @@
           "package_name": "com.sareedraping.saree_draping_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "516636428857-avbokncdu9i267fc6cojq6jquljqgnj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sareedraping.saree_draping_app",
+            "certificate_hash": "be0a76e9ae97f261d5bd639b464e66dc1b29e1ee"
+          }
+        },
+        {
+          "client_id": "516636428857-d560hurg24kp9mr3nmv9doiksdsotsji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDxctajQO-bkO3airGEPlGiUfaopc8q0D8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "516636428857-d560hurg24kp9mr3nmv9doiksdsotsji.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

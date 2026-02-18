@@ -12,6 +12,7 @@ class UserModel {
   final String? role; // 'user', 'store_keeper', 'admin'
   final String? tenantId;
   final DateTime? createdAt;
+  final int credits;
 
   UserModel({
     this.id,
@@ -27,6 +28,7 @@ class UserModel {
     this.role,
     this.tenantId,
     this.createdAt,
+    this.credits = 0,
   });
 
   UserModel copyWith({
@@ -43,6 +45,7 @@ class UserModel {
     String? role,
     String? tenantId,
     DateTime? createdAt,
+    int? credits,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -58,6 +61,7 @@ class UserModel {
       role: role ?? this.role,
       tenantId: tenantId ?? this.tenantId,
       createdAt: createdAt ?? this.createdAt,
+      credits: credits ?? this.credits,
     );
   }
 
@@ -76,6 +80,7 @@ class UserModel {
       'role': role,
       'tenant_id': tenantId,
       'created_at': createdAt?.toIso8601String(),
+      'credits': credits,
     };
   }
 
@@ -96,6 +101,7 @@ class UserModel {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
+      credits: (json['credits'] as int?) ?? 0,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:saree_draping_app/screens/credits/credits_screen.dart';
 import 'package:saree_draping_app/screens/auth/login_screen.dart';
 import 'package:saree_draping_app/screens/auth/register_screen.dart';
 import 'package:saree_draping_app/screens/business/add_store_screen.dart';
@@ -78,6 +79,11 @@ final GoRouter appRouter = GoRouter(
                   path: 'virtual-draping',
                   parentNavigatorKey: _rootNavigatorKey,
                   builder: (context, state) => const VirtualDrapingScreen(),
+                ),
+                GoRoute(
+                  path: 'credits',
+                  parentNavigatorKey: _rootNavigatorKey,
+                  builder: (context, state) => const CreditsScreen(),
                 ),
                 GoRoute(
                   path: 'business',
