@@ -11,6 +11,7 @@ class CreditProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
 
   int _credits = 0;
+  String? _loadedUserId; // guard against re-fetching for same user
   final List<CreditTransaction> _transactions = [];
   CreditState _state = CreditState.idle;
   String? _errorMessage;
@@ -30,8 +31,20 @@ class CreditProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Clear state on logout so the next user loads fresh data.
+  void reset() {
+    _credits = 0;
+    _loadedUserId = null;
+    _transactions.clear();
+    _state = CreditState.idle;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   /// Load credits balance and transaction history from Firestore.
   Future<void> loadForUser(String userId) async {
+    if (_loadedUserId == userId) return; // already loaded
+    _loadedUserId = userId;
     _state = CreditState.loading;
     notifyListeners();
     try {

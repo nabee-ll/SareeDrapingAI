@@ -18,8 +18,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Seed Firestore with initial data (runs only once)
-  await DataSeeder().seedIfNeeded();
+  // Run seeder in background — never block app launch
+  DataSeeder().seedIfNeeded().catchError((_) {});
 
   runApp(const SareeDrapingApp());
 }
@@ -36,8 +36,11 @@ class SareeDrapingApp extends StatelessWidget {
           create: (_) => CreditProvider(),
           update: (_, auth, credits) {
             final provider = credits ?? CreditProvider();
-            if (auth.isAuthenticated && auth.user?.id != null) {
-              provider.loadForUser(auth.user!.id!);
+            final uid = auth.user?.id;
+            if (auth.isAuthenticated && uid != null) {
+              provider.loadForUser(uid); // idempotent — skips if already loaded
+            } else if (!auth.isAuthenticated) {
+              provider.reset(); // clear on logout
             }
             return provider;
           },
