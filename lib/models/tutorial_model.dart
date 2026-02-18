@@ -4,7 +4,10 @@ class TutorialModel {
   final String duration;
   final int steps;
   final String difficulty; // 'beginner', 'intermediate', 'advanced'
-  final String category; // 'Beginner Tutorials', 'Intermediate Tutorials', 'Advanced Tutorials'
+  final String category;  // 'Beginner Tutorials', 'Intermediate Tutorials', 'Advanced Tutorials'
+  final String? videoUrl;  // YouTube or direct mp4 URL
+  final String? thumbnailUrl; // thumbnail image URL
+  final String? description;
 
   const TutorialModel({
     required this.id,
@@ -13,6 +16,9 @@ class TutorialModel {
     required this.steps,
     required this.difficulty,
     required this.category,
+    this.videoUrl,
+    this.thumbnailUrl,
+    this.description,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +29,9 @@ class TutorialModel {
       'steps': steps,
       'difficulty': difficulty,
       'category': category,
+      'video_url': videoUrl,
+      'thumbnail_url': thumbnailUrl,
+      'description': description,
     };
   }
 
@@ -34,6 +43,33 @@ class TutorialModel {
       steps: json['steps'] ?? 0,
       difficulty: json['difficulty'] ?? 'beginner',
       category: json['category'] ?? '',
+      videoUrl: json['video_url'],
+      thumbnailUrl: json['thumbnail_url'],
+      description: json['description'],
+    );
+  }
+
+  TutorialModel copyWith({
+    String? id,
+    String? title,
+    String? duration,
+    int? steps,
+    String? difficulty,
+    String? category,
+    String? videoUrl,
+    String? thumbnailUrl,
+    String? description,
+  }) {
+    return TutorialModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      duration: duration ?? this.duration,
+      steps: steps ?? this.steps,
+      difficulty: difficulty ?? this.difficulty,
+      category: category ?? this.category,
+      videoUrl: videoUrl ?? this.videoUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      description: description ?? this.description,
     );
   }
 }

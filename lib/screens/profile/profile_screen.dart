@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/data_seeder.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -93,6 +94,10 @@ class ProfileScreen extends StatelessWidget {
                   onTap: () {},
                 ),
                 const SizedBox(height: 16),
+                // ── Dev Tool: Seed Database ──────────────────────────────
+                _SeedDatabaseButton(),
+                const SizedBox(height: 8),
+                // ─────────────────────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -155,6 +160,84 @@ class ProfileScreen extends StatelessWidget {
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
+    );
+  }
+}
+
+// ─── Seed Database Button ─────────────────────────────────────────────────────
+class _SeedDatabaseButton extends StatefulWidget {
+  @override
+  State<_SeedDatabaseButton> createState() => _SeedDatabaseButtonState();
+}
+
+class _SeedDatabaseButtonState extends State<_SeedDatabaseButton> {
+  bool _loading = false;
+  String? _message;
+
+  Future<void> _seed() async {
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      await DataSeeder().forceSeed();
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _message = '✅ Database seeded successfully!';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _message = '❌ Failed: $e';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _loading ? null : _seed,
+            icon: _loading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: AppColors.info),
+                  )
+                : const Icon(Icons.cloud_upload_outlined,
+                    color: AppColors.info),
+            label: Text(
+              _loading ? 'Uploading data...' : 'Seed Database',
+              style: const TextStyle(color: AppColors.info),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: AppColors.info),
+              minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+        ),
+        if (_message != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            _message!,
+            style: TextStyle(
+              fontSize: 12,
+              color: _message!.startsWith('✅')
+                  ? AppColors.success
+                  : AppColors.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ],
     );
   }
 }

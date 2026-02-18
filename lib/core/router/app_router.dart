@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:saree_draping_app/screens/admin/admin_dashboard_screen.dart';
+import 'package:saree_draping_app/screens/admin/admin_credits_screen.dart';
+import 'package:saree_draping_app/screens/admin/admin_shell.dart';
+import 'package:saree_draping_app/screens/admin/admin_styles_screen.dart';
+import 'package:saree_draping_app/screens/admin/admin_users_screen.dart';
+import 'package:saree_draping_app/screens/admin/admin_videos_screen.dart';
 import 'package:saree_draping_app/screens/credits/credits_screen.dart';
 import 'package:saree_draping_app/screens/auth/login_screen.dart';
 import 'package:saree_draping_app/screens/auth/register_screen.dart';
@@ -20,6 +26,7 @@ import 'package:saree_draping_app/screens/subscription/subscription_screen.dart'
 import 'package:saree_draping_app/screens/tutorials/tutorials_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _adminNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -146,6 +153,34 @@ final GoRouter appRouter = GoRouter(
               builder: (context, state) => const ProfileScreen(),
             ),
           ],
+        ),
+      ],
+    ),
+
+    // ── Admin Shell (separate from main shell, no bottom-nav tabs) ──
+    ShellRoute(
+      navigatorKey: _adminNavigatorKey,
+      builder: (context, state, child) => AdminShell(child: child),
+      routes: [
+        GoRoute(
+          path: '/admin',
+          builder: (context, state) => const AdminDashboardScreen(),
+        ),
+        GoRoute(
+          path: '/admin/videos',
+          builder: (context, state) => const AdminVideosScreen(),
+        ),
+        GoRoute(
+          path: '/admin/styles',
+          builder: (context, state) => const AdminStylesScreen(),
+        ),
+        GoRoute(
+          path: '/admin/credits',
+          builder: (context, state) => const AdminCreditsScreen(),
+        ),
+        GoRoute(
+          path: '/admin/users',
+          builder: (context, state) => const AdminUsersScreen(),
         ),
       ],
     ),

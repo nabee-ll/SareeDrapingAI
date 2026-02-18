@@ -1,12 +1,14 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 /// Razorpay payment service for handling UPI and card payments securely.
 /// Replace [kRazorpayKeyId] with your actual Razorpay key from the dashboard.
+/// NOTE: Razorpay is not supported on web — payments are disabled on web.
 class PaymentService {
   static const String kRazorpayKeyId = 'rzp_test_XXXXXXXXXXXXXXXX'; // 🔐 Replace with live key in production
 
-  late Razorpay _razorpay;
+  Razorpay? _razorpay;
 
   /// Callbacks provided by the caller
   final void Function(PaymentSuccessResponse) onSuccess;
@@ -18,10 +20,12 @@ class PaymentService {
     required this.onFailure,
     required this.onExternalWallet,
   }) {
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, onSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, onFailure);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, onExternalWallet);
+    if (!kIsWeb) {
+      _razorpay = Razorpay();
+      _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, onSuccess);
+      _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR, onFailure);
+      _razorpay!.on(Razorpay.EVENT_EXTERNAL_WALLET, onExternalWallet);
+    }
   }
 
   /// Opens the Razorpay checkout for purchasing credit packs.
@@ -77,8 +81,13 @@ class PaymentService {
     };
     if (orderId != null) options['order_id'] = orderId;
 
+    if (kIsWeb) {
+      debugPrint('PaymentService: Razorpay is not supported on web.');
+      return;
+    }
+
     try {
-      _razorpay.open(options);
+      _razorpay!.open(options);
     } catch (e) {
       debugPrint('PaymentService error: $e');
     }
@@ -86,6 +95,6 @@ class PaymentService {
 
   /// Must be called when the hosting widget is disposed.
   void dispose() {
-    _razorpay.clear();
+    _razorpay?.clear();
   }
 }

@@ -237,4 +237,66 @@ class FirestoreService {
   Future<void> updateUserCredits(String userId, int credits) async {
     await _db.collection(_users).doc(userId).update({'credits': credits});
   }
+
+  // ══════════════════════════════════════════════════════════
+  // ADMIN — CONTENT MANAGEMENT
+  // ══════════════════════════════════════════════════════════
+
+  Future<void> updateTutorial(TutorialModel tutorial) async {
+    await _db.collection(_tutorials).doc(tutorial.id).set(tutorial.toJson());
+  }
+
+  Future<void> deleteTutorial(String id) async {
+    await _db.collection(_tutorials).doc(id).delete();
+  }
+
+  Future<void> updateRegionalStyle(RegionalStyle style) async {
+    await _db.collection(_regionalStyles).doc(style.id).set(style.toJson());
+  }
+
+  Future<void> deleteRegionalStyle(String id) async {
+    await _db.collection(_regionalStyles).doc(id).delete();
+  }
+
+  Future<void> updateCreditPack(CreditPack pack) async {
+    await _db.collection(_creditPacks).doc(pack.id).set(pack.toJson());
+  }
+
+  Future<void> deleteCreditPack(String id) async {
+    await _db.collection(_creditPacks).doc(id).delete();
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // ADMIN — USERS & PAYMENTS
+  // ══════════════════════════════════════════════════════════
+
+  Future<List<UserModel>> getAllUsers() async {
+    final snapshot = await _db
+        .collection(_users)
+        .orderBy('created_at', descending: true)
+        .limit(200)
+        .get();
+    return snapshot.docs
+        .map((doc) => UserModel.fromJson(doc.data()))
+        .toList();
+  }
+
+  Future<List<CreditTransaction>> getAllTransactions({int limit = 100}) async {
+    final snapshot = await _db
+        .collection(_transactions)
+        .orderBy('created_at', descending: true)
+        .limit(limit)
+        .get();
+    return snapshot.docs
+        .map((doc) => CreditTransaction.fromJson(doc.data()))
+        .toList();
+  }
+
+  Future<void> adminUpdateUserCredits(String userId, int credits) async {
+    await _db.collection(_users).doc(userId).update({'credits': credits});
+  }
+
+  Future<void> adminUpdateUserRole(String userId, String role) async {
+    await _db.collection(_users).doc(userId).update({'role': role});
+  }
 }

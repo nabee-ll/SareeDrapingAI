@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
 import 'providers/credit_provider.dart';
 import 'providers/data_provider.dart';
+import 'providers/admin_provider.dart';
 import 'providers/onboarding_provider.dart';
 import 'providers/store_provider.dart';
 import 'services/data_seeder.dart';
@@ -56,6 +57,7 @@ class SareeDrapingApp extends StatelessWidget {
           return provider;
         }),
         ChangeNotifierProvider(create: (_) => StoreProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: MaterialApp.router(
         title: AppStrings.appName,

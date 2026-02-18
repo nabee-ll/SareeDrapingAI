@@ -3,8 +3,9 @@ class RegionalStyle {
   final String name;
   final String region;
   final String description;
-  final String imageAsset;
-  final String difficulty; // 'beginner', 'intermediate', 'advanced'
+  final String imageAsset;  // local asset name (fallback)
+  final String? imageUrl;   // remote URL uploaded by admin
+  final String difficulty;
   final int stepCount;
 
   const RegionalStyle({
@@ -13,6 +14,7 @@ class RegionalStyle {
     required this.region,
     required this.description,
     required this.imageAsset,
+    this.imageUrl,
     required this.difficulty,
     required this.stepCount,
   });
@@ -24,6 +26,7 @@ class RegionalStyle {
       'region': region,
       'description': description,
       'image_asset': imageAsset,
+      'image_url': imageUrl,
       'difficulty': difficulty,
       'step_count': stepCount,
     };
@@ -36,8 +39,31 @@ class RegionalStyle {
       region: json['region'] ?? '',
       description: json['description'] ?? '',
       imageAsset: json['image_asset'] ?? '',
+      imageUrl: json['image_url'],
       difficulty: json['difficulty'] ?? 'beginner',
       stepCount: json['step_count'] ?? 0,
+    );
+  }
+
+  RegionalStyle copyWith({
+    String? id,
+    String? name,
+    String? region,
+    String? description,
+    String? imageAsset,
+    String? imageUrl,
+    String? difficulty,
+    int? stepCount,
+  }) {
+    return RegionalStyle(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      region: region ?? this.region,
+      description: description ?? this.description,
+      imageAsset: imageAsset ?? this.imageAsset,
+      imageUrl: imageUrl ?? this.imageUrl,
+      difficulty: difficulty ?? this.difficulty,
+      stepCount: stepCount ?? this.stepCount,
     );
   }
 }

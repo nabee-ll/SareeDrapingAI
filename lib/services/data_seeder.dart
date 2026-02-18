@@ -8,19 +8,30 @@ import '../models/design_pattern_model.dart';
 import 'firestore_service.dart';
 
 /// Seeds the Firestore database with initial data.
-/// Only runs once — checks a `_meta/seeded` flag in Firestore.
+/// Uses regional_styles count as the seed check — avoids _meta permission issues.
 class DataSeeder {
   final FirestoreService _firestoreService = FirestoreService();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> seedIfNeeded() async {
-    final metaDoc = await _db.collection('_meta').doc('seeded').get();
-    if (metaDoc.exists) {
-      // Even if already seeded, ensure newer collections exist
+    // Check if data already exists by looking at regional_styles collection
+    final stylesSnap =
+        await _db.collection('regional_styles').limit(1).get();
+    if (stylesSnap.docs.isNotEmpty) {
+      // Already seeded — just ensure newer collections exist
       await _ensureCreditData();
       return;
     }
+    await _forceSeed();
+  }
 
+  /// Force-seeds ALL collections regardless of existing data. 
+  /// Safe to call multiple times (uses .set which overwrites).
+  Future<void> forceSeed() async {
+    await _forceSeed();
+  }
+
+  Future<void> _forceSeed() async {
     await _seedRegionalStyles();
     await _seedTutorials();
     await _seedSubscriptionPlans();
@@ -29,11 +40,6 @@ class DataSeeder {
     await _seedSampleDesignPatterns();
     await _seedCreditPacks();
     await _seedAppConfig();
-
-    // Mark as seeded
-    await _db.collection('_meta').doc('seeded').set({
-      'seeded_at': FieldValue.serverTimestamp(),
-    });
   }
 
   /// Ensures credit_packs and app_config exist (idempotent).
@@ -41,7 +47,8 @@ class DataSeeder {
     final packsSnap = await _db.collection('credit_packs').limit(1).get();
     if (packsSnap.docs.isEmpty) await _seedCreditPacks();
 
-    final configDoc = await _db.collection('app_config').doc('credits').get();
+    final configDoc =
+        await _db.collection('app_config').doc('credits').get();
     if (!configDoc.exists) await _seedAppConfig();
   }
 

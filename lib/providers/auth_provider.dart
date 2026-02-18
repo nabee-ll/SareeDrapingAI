@@ -1,4 +1,5 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -13,7 +14,8 @@ enum AuthMode { login, register }
 class AuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreService _firestoreService = FirestoreService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // GoogleSignIn is not supported on web without a web OAuth client ID
+  final GoogleSignIn? _googleSignIn = kIsWeb ? null : GoogleSignIn();
 
   AuthState _state = AuthState.initial;
   AuthMode _authMode = AuthMode.login;
@@ -231,9 +233,15 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> _loginGoogle() async {
+    if (kIsWeb || _googleSignIn == null) {
+      _state = AuthState.error;
+      _errorMessage = 'Google sign-in is not available on web yet.';
+      notifyListeners();
+      return false;
+    }
     _state = AuthState.loading; _errorMessage = null; notifyListeners();
     try {
-      final googleUser = await _googleSignIn.signIn();
+      final googleUser = await _googleSignIn!.signIn();
       if (googleUser == null) { _state = AuthState.unauthenticated; notifyListeners(); return false; }
       final googleAuth = await googleUser.authentication;
       final cred = GoogleAuthProvider.credential(
@@ -249,6 +257,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> _loginApple() async {
+    if (kIsWeb) {
+      _state = AuthState.error;
+      _errorMessage = 'Apple sign-in is not available on web.';
+      notifyListeners();
+      return false;
+    }
     _state = AuthState.loading; _errorMessage = null; notifyListeners();
     try {
       final appleCred = await SignInWithApple.getAppleIDCredential(
@@ -269,6 +283,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> _loginFacebook() async {
+    if (kIsWeb) {
+      _state = AuthState.error;
+      _errorMessage = 'Facebook sign-in is not available on web yet.';
+      notifyListeners();
+      return false;
+    }
     _state = AuthState.loading; _errorMessage = null; notifyListeners();
     try {
       final loginResult = await FacebookAuth.instance.login();
@@ -290,7 +310,7 @@ class AuthProvider extends ChangeNotifier {
   //  Sign Out 
 
   Future<void> logout() async {
-    await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
+    await Future.wait([_auth.signOut(), if (!kIsWeb && _googleSignIn != null) _googleSignIn!.signOut()]);
     _user = null; _state = AuthState.unauthenticated;
     _isOtpSent = false; _verificationId = null; _errorMessage = null;
     notifyListeners();

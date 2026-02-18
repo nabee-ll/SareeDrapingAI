@@ -5,6 +5,12 @@
 //    download GoogleService-Info.plist → ios/Runner/ and re-run
 //    `flutterfire configure --project=drape-and-glow` to replace this file.
 //
+// ⚠️  Web: The appId below is a placeholder. To get the real web appId:
+//    1. Firebase Console → Project Settings → Add app → Web
+//    2. Copy the appId from the config shown (format: 1:516636428857:web:xxxxxx)
+//    3. Replace the appId in the `web` config below.
+//    Services (Auth, Firestore) work with any appId; only Analytics needs the real one.
+//
 // DO NOT commit real API keys to public repositories.
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
@@ -14,10 +20,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'Web is not configured yet. Add the web app in Firebase Console '
-        'and run `flutterfire configure --project=drape-and-glow`.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -35,6 +38,18 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
+  // ── Web ──────────────────────────────────────────────────────────────────
+  // apiKey + projectId + authDomain are correct. Replace appId with the real
+  // one from Firebase Console → Project Settings → Web apps.
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDxctajQO-bkO3airGEPlGiUfaopc8q0D8',
+    appId: '1:516636428857:web:placeholder000000000000',
+    messagingSenderId: '516636428857',
+    projectId: 'drape-and-glow',
+    authDomain: 'drape-and-glow.firebaseapp.com',
+    storageBucket: 'drape-and-glow.firebasestorage.app',
+  );
 
   // ── Android ──────────────────────────────────────────────────────────────
   // Source: android/app/google-services.json
