@@ -1,82 +1,130 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/saree_asset_model.dart';
 
 class VirtualDrapingScreen extends StatelessWidget {
-  const VirtualDrapingScreen({super.key});
+  final SareeAsset? preselectedAsset;
+  const VirtualDrapingScreen({super.key, this.preselectedAsset});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Virtual Draping'),
+        title: const Text('Virtual Try-On'),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
+      backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Animated icon with glow
               Container(
-                width: 120,
-                height: 120,
+                width: 110,
+                height: 110,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.primary.withValues(alpha: 0.15),
-                      AppColors.secondary.withValues(alpha: 0.1),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(60),
-                ),
-                child: const Icon(Icons.auto_awesome,
-                    size: 56, color: AppColors.primary),
-              ),
-              const SizedBox(height: 32),
-              Text(
-                'AI Virtual Draping',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Our AI-powered virtual draping feature is coming soon! You\'ll be able to try different saree styles virtually.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 32),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.gold.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.star, color: AppColors.gold, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Premium Feature',
-                      style: TextStyle(
-                        color: AppColors.gold,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  shape: BoxShape.circle,
+                  color: AppColors.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      blurRadius: 40,
+                      spreadRadius: 10,
                     ),
                   ],
+                  border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      width: 1.5),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  size: 52,
+                  color: AppColors.primaryLight,
                 ),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Notify Me When Available'),
+              const Text(
+                'Coming Soon',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Our AI-powered Virtual Saree Try-On feature is under development and will be available shortly.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: AppColors.textSecondary,
+                  height: 1.55,
+                ),
+              ),
+              const SizedBox(height: 36),
+              // Feature preview chips
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                alignment: WrapAlignment.center,
+                children: const [
+                  _FeatureChip(label: '\u{1F457} Any Saree Style'),
+                  _FeatureChip(label: '\u{1F4F7} Upload Your Photo'),
+                  _FeatureChip(label: '\u2728 AI Draping'),
+                  _FeatureChip(label: '\u{1F4BE} Save to Gallery'),
+                ],
+              ),
+              const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.arrow_back_rounded,
+                      color: AppColors.primaryLight),
+                  label: const Text(
+                    'Go Back',
+                    style: TextStyle(color: AppColors.primaryLight),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                        color: AppColors.primaryLight.withValues(alpha: 0.5)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FeatureChip extends StatelessWidget {
+  final String label;
+  const _FeatureChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+            fontSize: 13,
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500),
       ),
     );
   }

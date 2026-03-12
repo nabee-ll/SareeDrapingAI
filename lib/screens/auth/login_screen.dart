@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../providers/auth_provider.dart';
-
-// ─── Login Screen ─────────────────────────────────────────────────────────────
-// Supports: OAuth (Google, Apple, Facebook), Phone OTP, Email + Password
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,29 +12,16 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
-  final _emailFormKey = GlobalKey<FormState>();
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _otpController = TextEditingController();
   bool _obscurePassword = true;
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _phoneController.dispose();
-    _otpController.dispose();
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -61,24 +45,11 @@ class _LoginScreenState extends State<LoginScreen>
                   const SizedBox(height: 24),
                   _buildHeader(context),
                   const SizedBox(height: 32),
-                  // ── OAuth ────────────────────────────────────────────────
                   _buildOAuthSection(context),
                   const SizedBox(height: 28),
                   _buildDivider(context),
                   const SizedBox(height: 28),
-                  // ── Email / Phone Tabs ───────────────────────────────────
-                  _buildTabBar(),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 310,
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildEmailLoginForm(context),
-                        _buildPhoneLoginForm(context),
-                      ],
-                    ),
-                  ),
+                  _buildEmailForm(context),
                   const SizedBox(height: 24),
                   _buildSignUpLink(context),
                   const SizedBox(height: 32),
@@ -90,8 +61,6 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-
-  // ─── Header ───────────────────────────────────────────────────────────────
 
   Widget _buildHeader(BuildContext context) {
     return Column(
@@ -126,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         const SizedBox(height: 6),
         Text(
-          'Sign in to continue your draping journey',
+          'Sign in to Drape & Glow',
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -137,23 +106,16 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── OAuth Section ────────────────────────────────────────────────────────
-
   Widget _buildOAuthSection(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
-        final isOAuthLoading = auth.state == AuthState.loading &&
-            (auth.loginMethod == 'google' ||
-                auth.loginMethod == 'apple' ||
-                auth.loginMethod == 'facebook');
-
         return Column(
           children: [
             _OAuthButton(
               icon: _GoogleIcon(),
               label: 'Continue with Google',
-              isLoading:
-                  auth.state == AuthState.loading && auth.loginMethod == 'google',
+              isLoading: auth.state == AuthState.loading &&
+                  auth.loginMethod == 'google',
               onTap: () async {
                 auth.setLoginMethod('google');
                 final ok = await auth.loginWithSocial('Google');
@@ -162,39 +124,9 @@ class _LoginScreenState extends State<LoginScreen>
                 }
               },
             ),
-            const SizedBox(height: 12),
-            _OAuthButton(
-              icon: const Icon(Icons.apple, color: Colors.white, size: 22),
-              label: 'Continue with Apple',
-              isLoading:
-                  auth.state == AuthState.loading && auth.loginMethod == 'apple',
-              onTap: () async {
-                auth.setLoginMethod('apple');
-                final ok = await auth.loginWithSocial('Apple');
-                if (ok && mounted) {
-                  if (context.mounted) context.go('/onboarding');
-                }
-              },
-            ),
-            const SizedBox(height: 12),
-            _OAuthButton(
-              icon: const Icon(Icons.facebook,
-                  color: Color(0xFF4267B2), size: 22),
-              label: 'Continue with Facebook',
-              isLoading:
-                  auth.state == AuthState.loading && auth.loginMethod == 'facebook',
-              onTap: () async {
-                auth.setLoginMethod('facebook');
-                final ok = await auth.loginWithSocial('Facebook');
-                if (ok && mounted) {
-                  if (context.mounted) context.go('/onboarding');
-                }
-              },
-            ),
-            if (auth.errorMessage != null && isOAuthLoading == false &&
-                (auth.loginMethod == 'google' ||
-                    auth.loginMethod == 'apple' ||
-                    auth.loginMethod == 'facebook')) ...[
+            if (auth.errorMessage != null &&
+                auth.state != AuthState.loading &&
+                auth.loginMethod == 'google') ...[
               const SizedBox(height: 10),
               Text(
                 auth.errorMessage!,
@@ -216,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'or sign in with',
+            'or sign in with email',
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -228,59 +160,11 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Tab Bar ──────────────────────────────────────────────────────────────
-
-  Widget _buildTabBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.primary, AppColors.primaryDark],
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        labelColor: Colors.white,
-        unselectedLabelColor: AppColors.textSecondary,
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        tabs: const [
-          Tab(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.email_outlined, size: 16),
-                SizedBox(width: 6),
-                Text('Email'),
-              ],
-            ),
-          ),
-          Tab(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.phone_outlined, size: 16),
-                SizedBox(width: 6),
-                Text('Phone OTP'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ─── Email Form ───────────────────────────────────────────────────────────
-
-  Widget _buildEmailLoginForm(BuildContext context) {
+  Widget _buildEmailForm(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
         return Form(
-          key: _emailFormKey,
+          key: _formKey,
           child: Column(
             children: [
               TextFormField(
@@ -293,7 +177,8 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Please enter your email';
-                  if (!v.contains('@')) return 'Please enter a valid email';
+                  if (!v.contains('@'))
+                    return 'Please enter a valid email';
                   return null;
                 },
               ),
@@ -314,15 +199,17 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Please enter your password';
-                  if (v.length < 6) return 'Password must be at least 6 characters';
+                  if (v == null || v.isEmpty)
+                    return 'Please enter your password';
+                  if (v.length < 6)
+                    return 'Password must be at least 6 characters';
                   return null;
                 },
               ),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {/* TODO: forgot password */},
+                  onPressed: () {},
                   child: const Text(
                     AppStrings.forgotPassword,
                     style: TextStyle(
@@ -333,11 +220,14 @@ class _LoginScreenState extends State<LoginScreen>
               if (auth.errorMessage != null &&
                   auth.loginMethod == 'email') ...[
                 const SizedBox(height: 4),
-                Text(auth.errorMessage!,
-                    style: const TextStyle(
-                        color: AppColors.error, fontSize: 12)),
+                Text(
+                  auth.errorMessage!,
+                  style: const TextStyle(
+                      color: AppColors.error, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
               ],
-              const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -345,13 +235,14 @@ class _LoginScreenState extends State<LoginScreen>
                       ? null
                       : () async {
                           auth.setLoginMethod('email');
-                          if (_emailFormKey.currentState?.validate() ??
-                              false) {
+                          if (_formKey.currentState?.validate() ?? false) {
                             final ok = await auth.loginWithEmail(
                               _emailController.text.trim(),
                               _passwordController.text,
                             );
-                            if (ok && context.mounted) context.go('/onboarding');
+                            if (ok && context.mounted) {
+                              context.go('/onboarding');
+                            }
                           }
                         },
                   child: auth.state == AuthState.loading &&
@@ -372,123 +263,34 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // ─── Phone / OTP Form ─────────────────────────────────────────────────────
-
-  Widget _buildPhoneLoginForm(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, auth, _) {
-        return Column(
-          children: [
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(
-                labelText: AppStrings.mobileNumber,
-                prefixIcon: Icon(Icons.phone_outlined),
-                prefixText: '+91 ',
-              ),
-            ),
-            const SizedBox(height: 14),
-            if (auth.isOtpSent) ...[
-              TextFormField(
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 20,
-                  letterSpacing: 8,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                  labelText: AppStrings.enterOtp,
-                  prefixIcon: Icon(Icons.pin_outlined),
-                  counterText: '',
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    auth.setLoginMethod('phone');
-                    auth.sendOtp(_phoneController.text.trim());
-                  },
-                  child: const Text(AppStrings.resendOtp,
-                      style: TextStyle(
-                          fontSize: 12, color: AppColors.primaryLight)),
-                ),
-              ),
-            ] else
-              const SizedBox(height: 20),
-            if (auth.errorMessage != null &&
-                auth.loginMethod == 'phone') ...[
-              const SizedBox(height: 4),
-              Text(auth.errorMessage!,
-                  style: const TextStyle(
-                      color: AppColors.error, fontSize: 12)),
-            ],
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: auth.state == AuthState.loading
-                    ? null
-                    : () async {
-                        auth.setLoginMethod('phone');
-                        if (!auth.isOtpSent) {
-                          await auth.sendOtp(
-                              _phoneController.text.trim());
-                        } else {
-                          final ok = await auth.verifyOtp(
-                            _phoneController.text.trim(),
-                            _otpController.text.trim(),
-                          );
-                          if (ok && context.mounted) context.go('/onboarding');
-                        }
-                      },
-                child: auth.state == AuthState.loading &&
-                        auth.loginMethod == 'phone'
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text(auth.isOtpSent
-                        ? AppStrings.verifyOtp
-                        : AppStrings.sendOtp),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ─── Sign-up Link ─────────────────────────────────────────────────────────
-
   Widget _buildSignUpLink(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(AppStrings.dontHaveAccount,
+        Text(
+          AppStrings.dontHaveAccount,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: AppColors.textSecondary),
+        ),
+        GestureDetector(
+          onTap: () => context.push('/register'),
+          child: const Text(
+            AppStrings.signUp,
             style: TextStyle(
-                color: AppColors.textSecondary, fontSize: 13)),
-        TextButton(
-          onPressed: () => context.go('/register'),
-          child: const Text(AppStrings.signUp,
-              style: TextStyle(
-                  color: AppColors.primaryLight,
-                  fontWeight: FontWeight.w600)),
+              color: AppColors.primaryLight,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
         ),
       ],
     );
   }
 }
 
-// ─── OAuth Button ─────────────────────────────────────────────────────────────
+// ── OAuth Button ──────────────────────────────────────────────────────────────
 
 class _OAuthButton extends StatelessWidget {
   final Widget icon;
@@ -505,70 +307,55 @@ class _OAuthButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: InkWell(
-        onTap: isLoading ? null : onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
-          ),
-          child: isLoading
-              ? const Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: AppColors.primaryLight),
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    icon,
-                    const SizedBox(width: 12),
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+    return InkWell(
+      onTap: isLoading ? null : onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.divider),
         ),
+        child: isLoading
+            ? const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.primary),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 22, height: 22, child: icon),
+                  const SizedBox(width: 12),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
 }
 
-// ─── Google 'G' Icon ──────────────────────────────────────────────────────────
-
 class _GoogleIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-      ),
-      child: const Center(
-        child: Text(
-          'G',
-          style: TextStyle(
-            color: Color(0xFFDB4437),
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+    return Image.network(
+      'https://www.google.com/favicon.ico',
+      width: 20,
+      height: 20,
+      errorBuilder: (_, __, ___) =>
+          const Icon(Icons.g_mobiledata, color: Colors.white, size: 22),
     );
   }
 }

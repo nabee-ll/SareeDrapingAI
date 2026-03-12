@@ -20,24 +20,24 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.background,
       textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
-        displayLarge: GoogleFonts.playfairDisplay(
+        displayLarge: GoogleFonts.raleway(
           fontSize: 34,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
           letterSpacing: -0.5,
         ),
-        displayMedium: GoogleFonts.playfairDisplay(
+        displayMedium: GoogleFonts.raleway(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
           letterSpacing: -0.3,
         ),
-        headlineLarge: GoogleFonts.playfairDisplay(
+        headlineLarge: GoogleFonts.raleway(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        headlineMedium: GoogleFonts.playfairDisplay(
+        headlineMedium: GoogleFonts.raleway(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
@@ -78,7 +78,7 @@ class AppTheme {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.playfairDisplay(
+        titleTextStyle: GoogleFonts.raleway(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,

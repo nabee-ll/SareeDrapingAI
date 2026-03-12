@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import '../services/firestore_service.dart';
+﻿import 'package:flutter/material.dart';
 
 class OnboardingProvider extends ChangeNotifier {
-  final FirestoreService _firestoreService = FirestoreService();
-
   String? _selectedLanguage;
   String? _selectedRegion;
   String? _selectedBodyType;
@@ -30,30 +27,46 @@ class OnboardingProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get bodyTypes => _bodyTypes;
   List<Map<String, dynamic>> get experienceLevels => _experienceLevels;
 
-  /// Load all onboarding options from Firestore
   Future<void> loadOptions() async {
     _isLoading = true;
     notifyListeners();
 
-    try {
-      final results = await Future.wait([
-        _firestoreService.getOnboardingOptions('languages'),
-        _firestoreService.getOnboardingOptions('regions'),
-        _firestoreService.getOnboardingOptions('body_types'),
-        _firestoreService.getOnboardingOptions('experience_levels'),
-      ]);
+    _languages = [
+      {'code': 'en', 'name': 'English'},
+      {'code': 'hi', 'name': 'Hindi'},
+      {'code': 'ta', 'name': 'Tamil'},
+      {'code': 'te', 'name': 'Telugu'},
+      {'code': 'kn', 'name': 'Kannada'},
+      {'code': 'ml', 'name': 'Malayalam'},
+      {'code': 'bn', 'name': 'Bengali'},
+      {'code': 'mr', 'name': 'Marathi'},
+      {'code': 'gu', 'name': 'Gujarati'},
+    ];
 
-      _languages = results[0];
-      _regions = results[1];
-      _bodyTypes = results[2];
-      _experienceLevels = results[3];
+    _regions = [
+      {'code': 'north', 'name': 'North India'},
+      {'code': 'south', 'name': 'South India'},
+      {'code': 'east', 'name': 'East India'},
+      {'code': 'west', 'name': 'West India'},
+      {'code': 'ne', 'name': 'North East India'},
+    ];
 
-      _isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      _isLoading = false;
-      notifyListeners();
-    }
+    _bodyTypes = [
+      {'code': 'petite', 'name': 'Petite'},
+      {'code': 'slim', 'name': 'Slim'},
+      {'code': 'average', 'name': 'Average'},
+      {'code': 'curvy', 'name': 'Curvy'},
+      {'code': 'plus', 'name': 'Plus Size'},
+    ];
+
+    _experienceLevels = [
+      {'code': 'beginner', 'name': 'Beginner', 'description': 'New to sarees'},
+      {'code': 'intermediate', 'name': 'Intermediate', 'description': 'Know the basics'},
+      {'code': 'expert', 'name': 'Expert', 'description': 'Drape with confidence'},
+    ];
+
+    _isLoading = false;
+    notifyListeners();
   }
 
   void selectLanguage(String languageCode) {
@@ -61,33 +74,24 @@ class OnboardingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectRegion(String regionId) {
-    _selectedRegion = regionId;
+  void selectRegion(String regionCode) {
+    _selectedRegion = regionCode;
     notifyListeners();
   }
 
-  void selectBodyType(String bodyTypeId) {
-    _selectedBodyType = bodyTypeId;
+  void selectBodyType(String bodyTypeCode) {
+    _selectedBodyType = bodyTypeCode;
     notifyListeners();
   }
 
-  void selectExperience(String experienceId) {
-    _selectedExperience = experienceId;
+  void selectExperience(String experienceCode) {
+    _selectedExperience = experienceCode;
     notifyListeners();
   }
 
   void nextStep() {
-    if (_currentStep < 3) {
-      _currentStep++;
-      notifyListeners();
-    }
-  }
-
-  void previousStep() {
-    if (_currentStep > 0) {
-      _currentStep--;
-      notifyListeners();
-    }
+    _currentStep++;
+    notifyListeners();
   }
 
   void goToStep(int step) {
@@ -106,7 +110,14 @@ class OnboardingProvider extends ChangeNotifier {
       case 3:
         return _selectedExperience != null;
       default:
-        return false;
+        return true;
+    }
+  }
+
+  void previousStep() {
+    if (_currentStep > 0) {
+      _currentStep--;
+      notifyListeners();
     }
   }
 

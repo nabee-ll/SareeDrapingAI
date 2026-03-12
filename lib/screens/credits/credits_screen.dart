@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/credit_model.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/credit_provider.dart';
-import '../../providers/data_provider.dart';
 
 class CreditsScreen extends StatelessWidget {
   const CreditsScreen({super.key});
@@ -19,14 +17,14 @@ class CreditsScreen extends StatelessWidget {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Consumer3<CreditProvider, AuthProvider, DataProvider>(
-        builder: (context, credits, auth, data, _) {
+      body: Consumer<CreditProvider>(
+        builder: (context, credits, _) {
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _BalanceCard(credits: credits.credits),
+                _BalanceCard(balance: credits.credits),
                 const SizedBox(height: 8),
                 _HowItWorksCard(),
                 const SizedBox(height: 24),
@@ -38,7 +36,7 @@ class CreditsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Pay securely via UPI, Card, or Wallet',
+                  'Pay securely via Stripe',
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -46,10 +44,9 @@ class CreditsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _PacksGrid(
-                  packs: data.creditPacks,
-                  currentCredits: credits.credits,
-                  authProvider: auth,
-                  creditProvider: credits,
+                  packs: credits.packs,
+                  isLoading: credits.isLoading,
+                  onBuy: (pack) => credits.purchasePack(pack),
                 ),
                 if (credits.errorMessage != null) ...[
                   const SizedBox(height: 12),
@@ -103,11 +100,11 @@ class CreditsScreen extends StatelessWidget {
   }
 }
 
-// ─── Balance Card ─────────────────────────────────────────────────────────────
+// ── Balance Card ──────────────────────────────────────────────────────────────
 
 class _BalanceCard extends StatelessWidget {
-  final int credits;
-  const _BalanceCard({required this.credits});
+  final int balance;
+  const _BalanceCard({required this.balance});
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +151,7 @@ class _BalanceCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '$credits',
+                '$balance',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 52,
@@ -178,20 +175,29 @@ class _BalanceCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              _CostChip(
-                icon: Icons.auto_awesome,
-                label: '${CreditCost.aiDraping} credits — AI Draping',
-                color: AppColors.primaryLight,
-              ),
-              const SizedBox(width: 8),
-              _CostChip(
-                icon: Icons.style,
-                label: '${CreditCost.stylishLook} credits — Stylish Look',
-                color: AppColors.gold,
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.primaryLight.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: AppColors.primaryLight.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.auto_awesome,
+                    size: 12, color: AppColors.primaryLight),
+                const SizedBox(width: 4),
+                Text(
+                  '${CreditCost.tryOn} credit per virtual try-on',
+                  style: const TextStyle(
+                      color: AppColors.primaryLight,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -199,35 +205,7 @@ class _BalanceCard extends StatelessWidget {
   }
 }
 
-class _CostChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  const _CostChip({required this.icon, required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(label,
-              style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w600)),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── How It Works ─────────────────────────────────────────────────────────────
+// ── How It Works ──────────────────────────────────────────────────────────────
 
 class _HowItWorksCard extends StatelessWidget {
   @override
@@ -256,11 +234,29 @@ class _HowItWorksCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          _HowItem(icon: Icons.auto_awesome, text: 'AI Draping Model costs ${CreditCost.aiDraping} credits per use', color: AppColors.primaryLight),
+          _HowItem(
+            icon: Icons.auto_awesome,
+            text: '${CreditCost.tryOn} credit per virtual try-on generation',
+            color: AppColors.primaryLight,
+          ),
           const SizedBox(height: 6),
-          _HowItem(icon: Icons.style, text: 'Stylish Look feature costs ${CreditCost.stylishLook} credits per use', color: AppColors.gold),
+          const _HowItem(
+            icon: Icons.refresh,
+            text: 'Credits are refunded if the job fails',
+            color: AppColors.success,
+          ),
           const SizedBox(height: 6),
-          _HowItem(icon: Icons.security, text: 'All payments secured by Razorpay with UPI, Cards & Wallets', color: AppColors.success),
+          const _HowItem(
+            icon: Icons.security,
+            text: 'All payments secured by Stripe',
+            color: AppColors.gold,
+          ),
+          const SizedBox(height: 6),
+          const _HowItem(
+            icon: Icons.card_giftcard,
+            text: 'New accounts receive 3 free credits',
+            color: AppColors.info,
+          ),
         ],
       ),
     );
@@ -271,7 +267,8 @@ class _HowItem extends StatelessWidget {
   final IconData icon;
   final String text;
   final Color color;
-  const _HowItem({required this.icon, required this.text, required this.color});
+  const _HowItem(
+      {required this.icon, required this.text, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -289,19 +286,17 @@ class _HowItem extends StatelessWidget {
   }
 }
 
-// ─── Packs Grid ───────────────────────────────────────────────────────────────
+// ── Packs Grid ────────────────────────────────────────────────────────────────
 
 class _PacksGrid extends StatelessWidget {
   final List<CreditPack> packs;
-  final int currentCredits;
-  final AuthProvider authProvider;
-  final CreditProvider creditProvider;
+  final bool isLoading;
+  final void Function(CreditPack) onBuy;
 
   const _PacksGrid({
     required this.packs,
-    required this.currentCredits,
-    required this.authProvider,
-    required this.creditProvider,
+    required this.isLoading,
+    required this.onBuy,
   });
 
   @override
@@ -312,21 +307,12 @@ class _PacksGrid extends StatelessWidget {
       mainAxisSpacing: 12,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 0.85,
+      childAspectRatio: 0.75,
       children: packs
           .map((pack) => _PackCard(
                 pack: pack,
-                isLoading: creditProvider.isLoading,
-                onBuy: () {
-                  final user = authProvider.user;
-                  creditProvider.purchaseCreditPack(
-                    pack: pack,
-                    userId: user?.id ?? '',
-                    userName: user?.fullName ?? '',
-                    userEmail: user?.email ?? '',
-                    userPhone: user?.phone ?? '',
-                  );
-                },
+                isLoading: isLoading,
+                onBuy: () => onBuy(pack),
               ))
           .toList(),
     );
@@ -379,7 +365,8 @@ class _PackCard extends StatelessWidget {
                         color: accent.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(Icons.stars_rounded, color: accent, size: 20),
+                      child:
+                          Icon(Icons.stars_rounded, color: accent, size: 20),
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -447,7 +434,7 @@ class _PackCard extends StatelessWidget {
                                 strokeWidth: 2, color: Colors.white),
                           )
                         : Text(
-                            '₹${pack.priceInRupees}',
+                            '\$${pack.priceUsd.toStringAsFixed(2)}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 14),
                           ),
@@ -462,7 +449,8 @@ class _PackCard extends StatelessWidget {
             top: 8,
             right: 8,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: BoxDecoration(
                 color: AppColors.gold,
                 borderRadius: BorderRadius.circular(8),
@@ -483,7 +471,7 @@ class _PackCard extends StatelessWidget {
   }
 }
 
-// ─── Transaction List ─────────────────────────────────────────────────────────
+// ── Transaction List ──────────────────────────────────────────────────────────
 
 class _TransactionList extends StatelessWidget {
   final List<CreditTransaction> transactions;
@@ -514,8 +502,9 @@ class _TransactionList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
-                  isCredit ? Icons.add_circle_outline : Icons.bolt,
-                  color: isCredit ? AppColors.success : AppColors.primaryLight,
+                  isCredit ? Icons.add_circle_outline : Icons.auto_awesome,
+                  color:
+                      isCredit ? AppColors.success : AppColors.primaryLight,
                   size: 20,
                 ),
               ),

@@ -1,12 +1,11 @@
-class CreditTransaction {
+﻿class CreditTransaction {
   final String id;
   final String userId;
   final int amount; // positive = purchased, negative = spent
-  final String type; // 'purchase', 'ai_draping', 'stylish', 'refund'
+  final String type; // 'purchase', 'tryon', 'refund', 'free_grant'
   final String description;
   final DateTime createdAt;
-  final String? paymentId; // Razorpay payment ID for purchases
-  final String? orderId;   // Razorpay order ID
+  final String? stripeSessionId;
 
   CreditTransaction({
     required this.id,
@@ -15,8 +14,7 @@ class CreditTransaction {
     required this.type,
     required this.description,
     required this.createdAt,
-    this.paymentId,
-    this.orderId,
+    this.stripeSessionId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -26,118 +24,87 @@ class CreditTransaction {
         'type': type,
         'description': description,
         'created_at': createdAt.toIso8601String(),
-        'payment_id': paymentId,
-        'order_id': orderId,
+        'stripe_session_id': stripeSessionId,
       };
 
   factory CreditTransaction.fromJson(Map<String, dynamic> json) =>
       CreditTransaction(
-        id: json['id'] ?? '',
-        userId: json['user_id'] ?? '',
-        amount: json['amount'] ?? 0,
-        type: json['type'] ?? 'purchase',
-        description: json['description'] ?? '',
+        id: json['id']?.toString() ?? '',
+        userId: json['user_id']?.toString() ?? '',
+        amount: (json['amount'] as num?)?.toInt() ?? 0,
+        type: json['type']?.toString() ?? 'purchase',
+        description: json['description']?.toString() ?? '',
         createdAt: json['created_at'] != null
-            ? DateTime.parse(json['created_at'])
+            ? DateTime.parse(json['created_at'].toString())
             : DateTime.now(),
-        paymentId: json['payment_id'],
-        orderId: json['order_id'],
+        stripeSessionId: json['stripe_session_id']?.toString(),
       );
 }
 
-/// Credit packs available for purchase via Razorpay
+/// Credit bundles available for purchase via Stripe Checkout.
+/// As defined in the platform architecture.
 class CreditPack {
   final String id;
   final String name;
   final int credits;
-  final int priceInPaise; // price in paise (₹1 = 100 paise)
+  final double priceUsd;
   final String bonus;
   final bool isBestValue;
-  final int sortOrder;
 
   const CreditPack({
     required this.id,
     required this.name,
     required this.credits,
-    required this.priceInPaise,
+    required this.priceUsd,
     this.bonus = '',
     this.isBestValue = false,
-    this.sortOrder = 0,
   });
-
-  int get priceInRupees => priceInPaise ~/ 100;
-  double get pricePerCredit => priceInPaise / 100 / credits;
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'credits': credits,
-        'price_in_paise': priceInPaise,
+        'price_usd': priceUsd,
         'bonus': bonus,
         'is_best_value': isBestValue,
-        'sort_order': sortOrder,
       };
 
   factory CreditPack.fromJson(Map<String, dynamic> json) => CreditPack(
-        id: json['id'] ?? '',
-        name: json['name'] ?? '',
-        credits: json['credits'] ?? 0,
-        priceInPaise: json['price_in_paise'] ?? 0,
-        bonus: json['bonus'] ?? '',
-        isBestValue: json['is_best_value'] ?? false,
-        sortOrder: json['sort_order'] ?? 0,
+        id: json['id']?.toString() ?? '',
+        name: json['name']?.toString() ?? '',
+        credits: (json['credits'] as num?)?.toInt() ?? 0,
+        priceUsd: (json['price_usd'] as num?)?.toDouble() ?? 0.0,
+        bonus: json['bonus']?.toString() ?? '',
+        isBestValue: json['is_best_value'] as bool? ?? false,
       );
 }
 
-/// Predefined credit packs
+/// Platform-defined credit bundles (architecture section 6).
 const List<CreditPack> kCreditPacks = [
   CreditPack(
-    id: 'starter',
+    id: 'pack_10',
     name: 'Starter',
     credits: 10,
-    priceInPaise: 4900, // ₹49
-    bonus: '',
+    priceUsd: 4.99,
   ),
   CreditPack(
-    id: 'popular',
+    id: 'pack_50',
     name: 'Popular',
     credits: 50,
-    priceInPaise: 19900, // ₹199
-    bonus: '+5 Bonus',
-    isBestValue: false,
-  ),
-  CreditPack(
-    id: 'pro',
-    name: 'Pro',
-    credits: 120,
-    priceInPaise: 39900, // ₹399
-    bonus: '+20 Bonus',
+    priceUsd: 19.99,
+    bonus: 'Best Value',
     isBestValue: true,
   ),
   CreditPack(
-    id: 'ultimate',
-    name: 'Ultimate',
-    credits: 300,
-    priceInPaise: 79900, // ₹799
-    bonus: '+50 Bonus',
-    isBestValue: false,
+    id: 'pack_200',
+    name: 'Pro',
+    credits: 200,
+    priceUsd: 59.99,
+    bonus: 'Most Credits',
   ),
 ];
 
-/// How many credits each feature costs.
-/// Default values are used as fallback; actual values are loaded from Firestore
-/// (app_config/credits document: { ai_draping_cost, stylish_look_cost }).
+/// Credit cost per feature.
 class CreditCost {
-  static int aiDraping = 5;
-  static int stylishLook = 2;
-
-  /// Update from Firestore app config
-  static void updateFromConfig(Map<String, dynamic> config) {
-    if (config['ai_draping_cost'] != null) {
-      aiDraping = config['ai_draping_cost'] as int;
-    }
-    if (config['stylish_look_cost'] != null) {
-      stylishLook = config['stylish_look_cost'] as int;
-    }
-  }
+  static const int tryOn = 1; // 1 credit per virtual try-on job
 }

@@ -39,10 +39,10 @@ class _SplashScreenState extends State<SplashScreen>
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         final auth = context.read<AuthProvider>();
-        if (auth.user?.role == 'admin') {
-          context.go('/admin');
-        } else {
+        if (auth.isAuthenticated) {
           context.go('/home');
+        } else {
+          context.go('/login');
         }
       }
     });

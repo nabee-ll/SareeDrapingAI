@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/data_seeder.dart';
+import '../../providers/credit_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -17,13 +17,12 @@ class ProfileScreen extends StatelessWidget {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
+      body: Consumer2<AuthProvider, CreditProvider>(
+        builder: (context, auth, credits, _) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                // Avatar
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: AppColors.primary,
@@ -42,12 +41,39 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  auth.user?.email ?? auth.user?.phone ?? '',
+                  auth.user?.email ?? '',
                   style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 8),
+                // Credits badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.4)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.stars_rounded,
+                          color: AppColors.gold, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${credits.credits} credits',
+                        style: const TextStyle(
+                          color: AppColors.goldLight,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 32),
 
-                // Menu items
                 _profileTile(
                   context,
                   icon: Icons.person_outline,
@@ -56,24 +82,17 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 _profileTile(
                   context,
-                  icon: Icons.card_membership,
-                  title: 'Subscription',
-                  subtitle: _planLabel(auth.user?.subscriptionTier),
-                  onTap: () => context.push('/home/subscriptions'),
+                  icon: Icons.stars_rounded,
+                  title: 'Buy Credits',
+                  subtitle: '${credits.credits} credits remaining',
+                  onTap: () => context.push('/home/credits'),
                 ),
                 _profileTile(
                   context,
-                  icon: Icons.store_outlined,
-                  title: 'Business Dashboard',
-                  subtitle: 'Manage stores & designs',
-                  onTap: () => context.push('/home/business'),
-                ),
-                _profileTile(
-                  context,
-                  icon: Icons.language,
-                  title: 'Language',
-                  subtitle: auth.user?.language ?? 'English',
-                  onTap: () {},
+                  icon: Icons.collections_rounded,
+                  title: 'My Gallery',
+                  subtitle: 'View your saved try-ons',
+                  onTap: () => context.go('/my-drapes'),
                 ),
                 _profileTile(
                   context,
@@ -90,14 +109,10 @@ class ProfileScreen extends StatelessWidget {
                 _profileTile(
                   context,
                   icon: Icons.info_outline,
-                  title: 'About',
+                  title: 'About Drape & Glow',
                   onTap: () {},
                 ),
                 const SizedBox(height: 16),
-                // ── Dev Tool: Seed Database ──────────────────────────────
-                _SeedDatabaseButton(),
-                const SizedBox(height: 8),
-                // ─────────────────────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -124,15 +139,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  String _planLabel(String? tier) {
-    return switch (tier) {
-      'basic' => 'Basic Plan',
-      'premium' => 'Premium Plan',
-      'annual' => 'Annual Premium',
-      _ => 'Free Plan',
-    };
-  }
-
   Widget _profileTile(
     BuildContext context, {
     required IconData icon,
@@ -156,88 +162,12 @@ class ProfileScreen extends StatelessWidget {
         subtitle: subtitle != null
             ? Text(subtitle, style: const TextStyle(fontSize: 12))
             : null,
-        trailing: const Icon(Icons.chevron_right, color: AppColors.textHint),
+        trailing:
+            const Icon(Icons.chevron_right, color: AppColors.textHint),
         onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-    );
-  }
-}
-
-// ─── Seed Database Button ─────────────────────────────────────────────────────
-class _SeedDatabaseButton extends StatefulWidget {
-  @override
-  State<_SeedDatabaseButton> createState() => _SeedDatabaseButtonState();
-}
-
-class _SeedDatabaseButtonState extends State<_SeedDatabaseButton> {
-  bool _loading = false;
-  String? _message;
-
-  Future<void> _seed() async {
-    setState(() {
-      _loading = true;
-      _message = null;
-    });
-    try {
-      await DataSeeder().forceSeed();
-      if (mounted) {
-        setState(() {
-          _loading = false;
-          _message = '✅ Database seeded successfully!';
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _loading = false;
-          _message = '❌ Failed: $e';
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: _loading ? null : _seed,
-            icon: _loading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: AppColors.info),
-                  )
-                : const Icon(Icons.cloud_upload_outlined,
-                    color: AppColors.info),
-            label: Text(
-              _loading ? 'Uploading data...' : 'Seed Database',
-              style: const TextStyle(color: AppColors.info),
-            ),
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: AppColors.info),
-              minimumSize: const Size(double.infinity, 48),
-            ),
-          ),
-        ),
-        if (_message != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            _message!,
-            style: TextStyle(
-              fontSize: 12,
-              color: _message!.startsWith('✅')
-                  ? AppColors.success
-                  : AppColors.error,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ],
     );
   }
 }

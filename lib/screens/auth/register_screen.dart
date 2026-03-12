@@ -236,7 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _emailController.text.trim(),
                               _passwordController.text,
                             );
-                            if (success && mounted) {
+                            if (success && context.mounted) {
                               context.go('/onboarding');
                             }
                           }

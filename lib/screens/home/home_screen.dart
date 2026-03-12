@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_strings.dart';
-import '../../models/credit_model.dart';
+import '../../core/mock/mock_data.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/credit_provider.dart';
-import '../../providers/data_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,9 +24,9 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 28),
               _buildAIDrapingCard(context),
               const SizedBox(height: 28),
-              _buildSareeStylesSection(context),
+              _buildFeaturedSarees(context),
               const SizedBox(height: 28),
-              _buildVideosSection(context),
+              _buildRecentTryOns(context),
               const SizedBox(height: 32),
             ],
           ),
@@ -49,7 +47,11 @@ class HomeScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.primaryDark, Color(0xFF2A0A18), AppColors.secondary],
+              colors: [
+                AppColors.primaryDark,
+                Color(0xFF2A0A18),
+                AppColors.secondary,
+              ],
             ),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(28),
@@ -124,39 +126,32 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               // Search bar
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: AppColors.primaryLight.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search styles, tutorials...',
-                    hintStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      fontSize: 14,
+              GestureDetector(
+                onTap: () => context.go('/explore'),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: AppColors.primaryLight.withValues(alpha: 0.3),
                     ),
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        color: AppColors.primaryLight),
-                    suffixIcon: Container(
-                      margin: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 13),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search_rounded,
+                          color: AppColors.primaryLight, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Search saree styles...',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          fontSize: 14,
+                        ),
                       ),
-                      child: const Icon(Icons.tune_rounded,
-                          color: Colors.white, size: 20),
-                    ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 14),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
+                    ],
                   ),
-                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -171,20 +166,20 @@ class HomeScreen extends StatelessWidget {
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
       {
-        'icon': Icons.grid_view_rounded,
-        'label': 'Styles',
+        'icon': Icons.checkroom_rounded,
+        'label': 'Catalogue',
         'color': AppColors.primaryLight,
-        'route': '/home/styles',
+        'route': '/explore',
       },
       {
-        'icon': Icons.play_circle_outline_rounded,
-        'label': 'Videos',
+        'icon': Icons.collections_rounded,
+        'label': 'Gallery',
         'color': AppColors.info,
-        'route': '/home/tutorials',
+        'route': '/my-drapes',
       },
       {
         'icon': Icons.auto_awesome,
-        'label': 'AI Drape',
+        'label': 'Try On',
         'color': AppColors.gold,
         'route': '/home/virtual-draping',
       },
@@ -201,8 +196,9 @@ class HomeScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: actions.map((action) {
+          final route = action['route'] as String;
           return GestureDetector(
-            onTap: () => context.push(action['route'] as String),
+            onTap: () => context.push(route),
             child: Column(
               children: [
                 Container(
@@ -212,8 +208,8 @@ class HomeScreen extends StatelessWidget {
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color:
-                          (action['color'] as Color).withValues(alpha: 0.35),
+                      color: (action['color'] as Color)
+                          .withValues(alpha: 0.35),
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -247,501 +243,379 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── AI Draping Hero Card ─────────────────────────────────────────────────
+  // ─── AI Draping Hero Card (Coming Soon) ──────────────────────────────────
 
   Widget _buildAIDrapingCard(BuildContext context) {
-    return Consumer<CreditProvider>(builder: (context, credits, _) {
-      final canAfford = credits.canAfford(CreditCost.aiDraping);
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: GestureDetector(
-          onTap: () {
-            if (canAfford) {
-              context.push('/home/virtual-draping');
-            } else {
-              context.push('/home/credits');
-            }
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primaryDark,
-                  Color(0xFF2A0A18),
-                  AppColors.secondary,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.35)),
+    return GestureDetector(
+      onTap: () => context.push('/home/virtual-draping'),
+      child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryDark.withValues(alpha: 0.7),
+              const Color(0xFF2A0A18).withValues(alpha: 0.8),
+              AppColors.secondary.withValues(alpha: 0.7),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.25)),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -20,
+              bottom: -20,
+              child: Icon(Icons.auto_awesome,
+                  size: 130,
+                  color: AppColors.primary.withValues(alpha: 0.08)),
             ),
-            child: Stack(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Positioned(
-                  right: -20,
-                  bottom: -20,
-                  child: Icon(Icons.auto_awesome,
-                      size: 130,
-                      color: AppColors.primary.withValues(alpha: 0.15)),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.gold.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color:
-                                    AppColors.gold.withValues(alpha: 0.4)),
-                          ),
-                          child: const Text(
-                            '\u2728 AI Powered',
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.gold.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: AppColors.gold.withValues(alpha: 0.3)),
+                      ),
+                      child: const Text(
+                        '\u2728 AI Powered',
+                        style: TextStyle(
+                          color: AppColors.goldLight,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: AppColors.info.withValues(alpha: 0.35)),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.schedule_rounded,
+                              size: 12, color: AppColors.info),
+                          SizedBox(width: 4),
+                          Text(
+                            'Coming Soon',
                             style: TextStyle(
-                              color: AppColors.goldLight,
+                              color: AppColors.info,
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                        const Spacer(),
-                        // Credit cost badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: canAfford
-                                ? AppColors.success.withValues(alpha: 0.2)
-                                : AppColors.error.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: canAfford
-                                  ? AppColors.success.withValues(alpha: 0.4)
-                                  : AppColors.error.withValues(alpha: 0.4),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.stars_rounded,
-                                  size: 12,
-                                  color: canAfford
-                                      ? AppColors.success
-                                      : AppColors.error),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${CreditCost.aiDraping} credits',
-                                style: TextStyle(
-                                  color: canAfford
-                                      ? AppColors.success
-                                      : AppColors.error,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Virtual Saree\nDraping',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Try any saree style on your photo\nwith our AI draping model',
-                      style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.65),
-                          fontSize: 13),
-                    ),
-                    const SizedBox(height: 14),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: canAfford
-                            ? AppColors.primary
-                            : AppColors.surfaceVariant,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Text(
-                        canAfford ? 'Try Now \u2192' : 'Buy Credits to Unlock',
-                        style: TextStyle(
-                          color: canAfford
-                              ? Colors.white
-                              : AppColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
+                        ],
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  'Virtual Saree\nTry-On',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.6),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Try any saree style on your photo\nwith our AI — launching soon!',
+                  style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.45),
+                      fontSize: 13),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                        color: AppColors.divider.withValues(alpha: 0.5)),
+                  ),
+                  child: const Text(
+                    '\u{1F512} Coming Soon',
+                    style: TextStyle(
+                      color: AppColors.textHint,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
               ],
             ),
+          ],
+        ),
+      ),
+    ),
+    );
+  }
+
+  // ─── Featured Sarees ──────────────────────────────────────────────────────
+
+  Widget _buildFeaturedSarees(BuildContext context) {
+    final featured = MockData.catalogue.take(6).toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Featured Sarees',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              GestureDetector(
+                onTap: () => context.go('/explore'),
+                child: const Text(
+                  'See all',
+                  style: TextStyle(
+                    color: AppColors.primaryLight,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-      );
-    });
-  }
-
-  // ─── Saree Styles Section ─────────────────────────────────────────────────
-
-  Widget _buildSareeStylesSection(BuildContext context) {
-    return Consumer<DataProvider>(builder: (context, dataProvider, _) {
-      final styles = dataProvider.getStylesPreview(8);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
+        const SizedBox(height: 14),
+        SizedBox(
+          height: 230,
+          child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppStrings.regionalStyles,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineMedium
-                      ?.copyWith(color: AppColors.textPrimary),
-                ),
-                TextButton(
-                  onPressed: () => context.push('/home/styles'),
-                  child: const Text('See All',
-                      style: TextStyle(color: AppColors.primaryLight)),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (dataProvider.isLoading)
-            const Center(
-                child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: CircularProgressIndicator(),
-            ))
-          else
-            SizedBox(
-              height: 150,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: styles.length,
-                itemBuilder: (context, index) {
-                  final style = styles[index];
-                  final colors = [
-                    AppColors.primary,
-                    AppColors.primaryLight,
-                    AppColors.gold,
-                    AppColors.info,
-                  ];
-                  final accent = colors[index % colors.length];
-                  return GestureDetector(
-                    onTap: () => context.push('/home/styles'),
-                    child: Container(
-                      width: 120,
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                            color: accent.withValues(alpha: 0.3)),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              color: accent.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Icon(Icons.checkroom_rounded,
-                                color: accent, size: 26),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            style.name,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            style.region,
-                            style: const TextStyle(
-                                fontSize: 10,
-                                color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
-      );
-    });
-  }
-
-  // ─── Videos / Tutorials Section ───────────────────────────────────────────
-
-  Widget _buildVideosSection(BuildContext context) {
-    return Consumer<DataProvider>(builder: (context, dataProvider, _) {
-      final tutorials = dataProvider.tutorials;
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Tutorial Videos',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineMedium
-                      ?.copyWith(color: AppColors.textPrimary),
-                ),
-                TextButton(
-                  onPressed: () => context.push('/home/tutorials'),
-                  child: const Text('See All',
-                      style: TextStyle(color: AppColors.primaryLight)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (dataProvider.isLoading)
-              const Center(
-                  child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: CircularProgressIndicator(),
-              ))
-            else if (tutorials.isEmpty)
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.divider),
-                ),
-                child: const Center(
-                  child: Text('No videos yet.',
-                      style: TextStyle(color: AppColors.textSecondary)),
-                ),
-              )
-            else
-              // Featured video card (larger)
-              GestureDetector(
-                onTap: () => context.push('/home/tutorials'),
+            scrollDirection: Axis.horizontal,
+            itemCount: featured.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, i) {
+              final saree = featured[i];
+              return GestureDetector(
+                onTap: () => context.go('/explore'),
                 child: Container(
-                  width: double.infinity,
-                  height: 180,
-                  margin: const EdgeInsets.only(bottom: 12),
+                  width: 148,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.info.withValues(alpha: 0.25),
-                        AppColors.primaryDark,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                        color: AppColors.info.withValues(alpha: 0.3)),
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.divider),
                   ),
-                  child: Stack(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: AppColors.info.withValues(alpha: 0.1),
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(18),
-                              bottomRight: Radius.circular(18),
-                            ),
-                          ),
-                          child: const Icon(Icons.play_circle_fill_rounded,
-                              color: AppColors.info, size: 60),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(16)),
+                          child: saree.thumbnailUrl.isNotEmpty
+                              ? Image.network(
+                                  saree.thumbnailUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    color: AppColors.surfaceVariant,
+                                    child: const Center(
+                                      child: Icon(Icons.style,
+                                          color: AppColors.primaryLight,
+                                          size: 40),
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  color: AppColors.surfaceVariant,
+                                  child: const Center(
+                                    child: Icon(Icons.style,
+                                        color: AppColors.primaryLight,
+                                        size: 40),
+                                  ),
+                                ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color:
-                                    AppColors.info.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                '\u25b6 Featured Video',
-                                style: TextStyle(
-                                    color: AppColors.info,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              tutorials.first.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              children: [
-                                const Icon(Icons.access_time,
-                                    size: 13,
-                                    color: AppColors.textSecondary),
-                                const SizedBox(width: 4),
-                                Text(
-                                  tutorials.first.duration,
-                                  style: const TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 12),
-                                ),
-                                const SizedBox(width: 12),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.surfaceVariant,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    tutorials.first.difficulty,
-                                    style: const TextStyle(
-                                        fontSize: 10,
-                                        color: AppColors.textSecondary),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            // Remaining tutorials list
-            ...tutorials.skip(1).take(3).map((tutorial) {
-              return GestureDetector(
-                onTap: () => context.push('/home/tutorials'),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.divider),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryDark.withValues(alpha: 0.4),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.play_circle_fill_rounded,
-                            color: AppColors.primaryLight, size: 30),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
+                        padding: const EdgeInsets.fromLTRB(10, 7, 10, 9),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              tutorial.title,
+                              saree.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: 12,
                               ),
                             ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${saree.region} • ${saree.fabricType}',
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary, fontSize: 11),
+                            ),
                             const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                const Icon(Icons.access_time,
-                                    size: 12, color: AppColors.textHint),
-                                const SizedBox(width: 4),
-                                Text(tutorial.duration,
-                                    style: const TextStyle(
-                                        fontSize: 11,
-                                        color: AppColors.textSecondary)),
-                                const SizedBox(width: 10),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.surfaceVariant,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    tutorial.difficulty,
-                                    style: const TextStyle(
-                                        fontSize: 9,
-                                        color: AppColors.textSecondary),
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              '₹${_formatK(saree.price)}',
+                              style: const TextStyle(
+                                color: AppColors.primaryLight,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right,
-                          color: AppColors.textHint, size: 20),
                     ],
                   ),
                 ),
               );
-            }),
-          ],
+            },
+          ),
         ),
-      );
-    });
+      ],
+    );
   }
+
+  // ─── Recent Try-Ons ───────────────────────────────────────────────────────
+
+  Widget _buildRecentTryOns(BuildContext context) {
+    final recent = MockData.gallery;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Recent Try-Ons',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              GestureDetector(
+                onTap: () => context.go('/my-drapes'),
+                child: const Text(
+                  'See all',
+                  style: TextStyle(
+                    color: AppColors.primaryLight,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          height: 140,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            scrollDirection: Axis.horizontal,
+            itemCount: recent.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, i) {
+              final item = recent[i];
+              return GestureDetector(
+                onTap: () => context.go('/my-drapes'),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: SizedBox(
+                    width: 100,
+                    height: 140,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        item.resultImageUrl.isNotEmpty
+                            ? Image.network(
+                                item.resultImageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: AppColors.surfaceVariant,
+                                  child: const Icon(Icons.broken_image,
+                                      size: 36,
+                                      color: AppColors.textHint),
+                                ),
+                              )
+                            : Container(
+                                color: AppColors.surfaceVariant,
+                                child: const Icon(Icons.image_outlined,
+                                    size: 36, color: AppColors.textHint),
+                              ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding:
+                                const EdgeInsets.fromLTRB(8, 18, 8, 8),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [
+                                  Colors.black.withValues(alpha: 0.7),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              item.sareenName ?? 'Try-On',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+String _formatK(double price) {
+  final p = price.toInt();
+  if (p >= 1000) {
+    final t = p ~/ 1000;
+    final r = p % 1000;
+    return r == 0 ? '${t}k' : '$t,${r.toString().padLeft(3, '0')}';
+  }
+  return p.toString();
 }
