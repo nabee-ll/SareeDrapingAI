@@ -435,10 +435,10 @@ function TryOnUploadPage() {
   ];
 
   const previewVariations = [
-    { label: 'Front View', imageUrl: frontViewImage },
-    { label: 'Side View', imageUrl: sideViewImage },
-    { label: 'Back View', imageUrl: backViewImage },
-    { label: 'Pallu View', imageUrl: palluViewImage },
+    { label: 'Front View', imageUrl: frontViewImage, objectPosition: 'center top' },
+    { label: 'Side View', imageUrl: sideViewImage, objectPosition: 'center top' },
+    { label: 'Back View', imageUrl: backViewImage, objectPosition: 'center top' },
+    { label: 'Pallu View', imageUrl: palluViewImage, objectPosition: 'center top' },
   ];
 
   const activeVariation =
@@ -595,11 +595,14 @@ function TryOnUploadPage() {
             </div>
             <strong>{progress}%</strong>
           </div>
-          <img
-            className="result-image"
-            src={activeVariation.imageUrl}
-            alt={`${activeVariation.label} output`}
-          />
+          <div className="result-image-frame">
+            <img
+              className="result-image"
+              src={activeVariation.imageUrl}
+              alt={`${activeVariation.label} output`}
+              style={{ objectPosition: activeVariation.objectPosition }}
+            />
+          </div>
           <div className="result-thumbs">
             {previewVariations.map((variation) => (
               <button
@@ -608,7 +611,11 @@ function TryOnUploadPage() {
                 className={`result-variant ${activeVariationLabel === variation.label ? 'active' : ''}`}
                 onClick={() => setActiveVariationLabel(variation.label)}
               >
-                <img src={variation.imageUrl} alt={variation.label} />
+                <img
+                  src={variation.imageUrl}
+                  alt={variation.label}
+                  style={{ objectPosition: variation.objectPosition }}
+                />
                 <span>{variation.label}</span>
               </button>
             ))}
