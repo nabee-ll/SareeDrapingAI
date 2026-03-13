@@ -1,6 +1,6 @@
 {
-    "name": "saree_draping_app",
-    "short_name": "saree_draping_app",
+    "name": "Drape & Glow",
+    "short_name": "Drape & Glow",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,6 +1,6 @@
-# saree_draping_app
+# Drape & Glow
 
-A new Flutter project.
+Drape & Glow application workspace.
 
 ## Getting Started
 

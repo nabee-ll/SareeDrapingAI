@@ -10,7 +10,7 @@ class CatalogueService {
   Future<List<SareeAsset>> getAssets({
     String? fabricType,
     String? region,
-    String? search,
+    String? search, 
     int page = 1,
     int limit = 20,
   }) async {

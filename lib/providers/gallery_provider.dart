@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../core/mock/mock_data.dart';
 import '../models/gallery_item_model.dart';
 import '../services/gallery_service.dart';
 
@@ -23,8 +22,8 @@ class GalleryProvider extends ChangeNotifier {
     try {
       _items = await _galleryService.getGallery();
     } catch (_) {
-      // Backend unreachable — show demo gallery
-      _items = MockData.gallery;
+      _items = [];
+      _errorMessage = 'Unable to load gallery right now.';
     }
     _isLoading = false;
     notifyListeners();

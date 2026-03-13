@@ -69,30 +69,35 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final result = await _authService.loginWithEmail(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       if (result.ok) return _handleResult(result);
-    } catch (_) {}
-    // Backend unreachable — mock login for demo
-    _user = UserModel(
-      id: 'demo_user',
-      fullName: email.split('@').first,
-      email: email,
-      role: 'user',
-      credits: 25,
-    );
-    _state = AuthState.authenticated;
-    _errorMessage = null;
+      _state = AuthState.error;
+      _errorMessage = result.error ?? 'Login failed. Please try again.';
+      notifyListeners();
+      return false;
+    } catch (_) {
+      _state = AuthState.error;
+      _errorMessage = 'Login failed. Please try again.';
+    }
     notifyListeners();
-    return true;
+    return false;
   }
 
   Future<bool> registerWithEmail(
-      String name, String email, String password) async {
+    String name,
+    String email,
+    String password,
+  ) async {
     _state = AuthState.loading;
     _errorMessage = null;
     notifyListeners();
     final result = await _authService.register(
-        name: name, email: email, password: password);
+      name: name,
+      email: email,
+      password: password,
+    );
     return _handleResult(result);
   }
 
@@ -113,35 +118,25 @@ class AuthProvider extends ChangeNotifier {
       final auth = await googleUser.authentication;
       final idToken = auth.idToken;
       if (idToken == null) {
-        // Backend unreachable — mock login with Google profile
-        _user = UserModel(
-          id: 'demo_user',
-          fullName: googleUser.displayName ?? googleUser.email.split('@').first,
-          email: googleUser.email,
-          avatarUrl: googleUser.photoUrl,
-          role: 'user',
-          credits: 25,
-        );
-        _state = AuthState.authenticated;
+        _state = AuthState.error;
+        _errorMessage = 'Google sign-in failed. Missing token.';
         notifyListeners();
-        return true;
+        return false;
       }
       try {
         final result = await _authService.loginWithGoogle(idToken);
         if (result.ok) return _handleResult(result);
-      } catch (_) {}
-      // Backend unreachable — mock login with Google profile
-      _user = UserModel(
-        id: 'demo_user',
-        fullName: googleUser.displayName ?? googleUser.email.split('@').first,
-        email: googleUser.email,
-        avatarUrl: googleUser.photoUrl,
-        role: 'user',
-        credits: 25,
-      );
-      _state = AuthState.authenticated;
+        _state = AuthState.error;
+        _errorMessage =
+            result.error ?? 'Google sign-in failed. Please try again.';
+        notifyListeners();
+        return false;
+      } catch (_) {
+        _state = AuthState.error;
+        _errorMessage = 'Google sign-in failed. Please try again.';
+      }
       notifyListeners();
-      return true;
+      return false;
     } catch (e) {
       _state = AuthState.error;
       _errorMessage = 'Google sign-in failed. Please try again.';

@@ -1,6 +1,5 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../core/mock/mock_data.dart';
 import '../models/credit_model.dart';
 import '../services/credit_service.dart';
 
@@ -38,9 +37,10 @@ class CreditProvider extends ChangeNotifier {
         ..addAll(txList);
       _state = CreditState.idle;
     } catch (_) {
-      // Backend unreachable — show demo credits
-      _credits = MockData.mockCredits;
-      _state = CreditState.idle;
+      _credits = 0;
+      _transactions.clear();
+      _state = CreditState.error;
+      _errorMessage = 'Unable to load credits right now.';
     }
     notifyListeners();
   }

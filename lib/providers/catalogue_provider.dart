@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../core/mock/mock_data.dart';
 import '../models/saree_asset_model.dart';
 import '../services/catalogue_service.dart';
 
@@ -32,8 +31,8 @@ class CatalogueProvider extends ChangeNotifier {
         search: _search.isEmpty ? null : _search,
       );
     } catch (_) {
-      // Backend unreachable — show demo catalogue
-      _assets = _filterMock(MockData.catalogue);
+      _assets = [];
+      _errorMessage = 'Unable to load catalogue right now.';
     }
     _isLoading = false;
     notifyListeners();
@@ -59,21 +58,5 @@ class CatalogueProvider extends ChangeNotifier {
     _fabricFilter = null;
     _regionFilter = null;
     load();
-  }
-
-  List<SareeAsset> _filterMock(List<SareeAsset> all) {
-    return all.where((a) {
-      if (_fabricFilter != null && a.fabricType != _fabricFilter) {
-        return false;
-      }
-      if (_regionFilter != null && a.region != _regionFilter) {
-        return false;
-      }
-      if (_search.isNotEmpty &&
-          !a.name.toLowerCase().contains(_search.toLowerCase())) {
-        return false;
-      }
-      return true;
-    }).toList();
   }
 }
