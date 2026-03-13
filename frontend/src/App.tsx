@@ -874,29 +874,143 @@ function CreditsBillingPage() {
 }
 
 function ProfileSettingsPage() {
+  const [fullName, setFullName] = useState('Nabeel A.');
+  const [email, setEmail] = useState('nabeel@example.com');
+  const [phone, setPhone] = useState('+91 98765 43210');
+  const [city, setCity] = useState('Bengaluru');
+  const [language, setLanguage] = useState('English');
+  const [bodyType, setBodyType] = useState('Athletic');
+  const [quality, setQuality] = useState('High');
+  const [theme, setTheme] = useState('Rose Noir');
+  const [pushEnabled, setPushEnabled] = useState(true);
+  const [emailUpdates, setEmailUpdates] = useState(true);
+
   return (
-    <section className="card profile-card">
-      <h2>User Profile and Settings</h2>
-      <label>
-        Full Name
-        <input defaultValue="Nabeel" />
-      </label>
-      <label>
-        Email
-        <input defaultValue="nabeel@example.com" />
-      </label>
-      <label>
-        Default Draping Quality
-        <select defaultValue="High">
-          <option>Balanced</option>
-          <option>High</option>
-          <option>Ultra</option>
-        </select>
-      </label>
-      <label className="toggle">
-        <input type="checkbox" defaultChecked />Enable push notifications
-      </label>
-      <button className="btn primary">Save Settings</button>
+    <section className="profile-page">
+      <article className="card profile-hero">
+        <div className="profile-identity">
+          <div className="profile-avatar">NA</div>
+          <div>
+            <h2>{fullName}</h2>
+            <p className="muted">{email}</p>
+            <div className="profile-badges">
+              <span className="chip">Premium Plan</span>
+              <span className="chip muted-chip">Member since Jan 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-kpis">
+          <div className="kpi-card">
+            <p className="muted">Credits</p>
+            <h4>42</h4>
+          </div>
+          <div className="kpi-card">
+            <p className="muted">Saved Drapes</p>
+            <h4>18</h4>
+          </div>
+          <div className="kpi-card">
+            <p className="muted">Theme Packs</p>
+            <h4>6</h4>
+          </div>
+        </div>
+      </article>
+
+      <div className="profile-layout">
+        <article className="card profile-card">
+          <h3>Personal Details</h3>
+          <div className="profile-form-grid">
+            <label>
+              Full Name
+              <input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            </label>
+            <label>
+              Email Address
+              <input value={email} onChange={(e) => setEmail(e.target.value)} />
+            </label>
+            <label>
+              Mobile
+              <input value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </label>
+            <label>
+              City
+              <input value={city} onChange={(e) => setCity(e.target.value)} />
+            </label>
+            <label>
+              Language
+              <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+                <option>English</option>
+                <option>Hindi</option>
+                <option>Tamil</option>
+                <option>Telugu</option>
+                <option>Kannada</option>
+              </select>
+            </label>
+            <label>
+              Body Type
+              <select value={bodyType} onChange={(e) => setBodyType(e.target.value)}>
+                <option>Athletic</option>
+                <option>Petite</option>
+                <option>Curvy</option>
+                <option>Tall</option>
+              </select>
+            </label>
+          </div>
+        </article>
+
+        <article className="card profile-card">
+          <h3>Draping Preferences</h3>
+          <div className="profile-form-grid">
+            <label>
+              Default Draping Quality
+              <select value={quality} onChange={(e) => setQuality(e.target.value)}>
+                <option>Balanced</option>
+                <option>High</option>
+                <option>Ultra</option>
+              </select>
+            </label>
+            <label>
+              Interface Theme
+              <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+                <option>Rose Noir</option>
+                <option>Ivory Gold</option>
+                <option>Monochrome Silk</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="profile-toggles">
+            <label className="toggle-row">
+              <span>
+                <strong>Push Notifications</strong>
+                <small>Get alerts for completed drapes and credits</small>
+              </span>
+              <input
+                type="checkbox"
+                checked={pushEnabled}
+                onChange={(e) => setPushEnabled(e.target.checked)}
+              />
+            </label>
+
+            <label className="toggle-row">
+              <span>
+                <strong>Email Updates</strong>
+                <small>Receive design drops and seasonal style tips</small>
+              </span>
+              <input
+                type="checkbox"
+                checked={emailUpdates}
+                onChange={(e) => setEmailUpdates(e.target.checked)}
+              />
+            </label>
+          </div>
+
+          <div className="profile-actions">
+            <button className="btn ghost">Cancel</button>
+            <button className="btn primary">Save Changes</button>
+          </div>
+        </article>
+      </div>
     </section>
   );
 }
