@@ -68,15 +68,26 @@
 .btn {
   border: 1px solid transparent;
   border-radius: 999px;
-  padding: 10px 16px;
+  min-height: 46px;
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-weight: 700;
+  line-height: 1;
   letter-spacing: 0.2px;
+  white-space: nowrap;
   background: var(--surface-variant);
   color: var(--text-primary);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 
 .btn.small {
-  padding: 8px 12px;
+  min-height: 38px;
+  padding: 8px 14px;
   font-size: 0.85rem;
 }
 
@@ -190,27 +201,35 @@
 .mode-switch {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: #18181d;
-  border: 1px solid var(--divider);
+  background: linear-gradient(180deg, rgba(17, 17, 22, 0.98), rgba(10, 10, 14, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 999px;
-  padding: 4px;
-  gap: 4px;
+  padding: 6px;
+  gap: 6px;
 }
 
 .mode-switch button {
   border: 0;
   border-radius: 999px;
-  padding: 10px 12px;
+  min-height: 50px;
+  padding: 12px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.6px;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 
 .mode-switch button.active {
-  background: var(--primary);
+  background: linear-gradient(180deg, var(--primary-light), var(--primary));
   color: #fff;
+  box-shadow: 0 8px 18px rgba(139, 34, 82, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .fabric-grid {
@@ -320,10 +339,22 @@
   border: 1px solid var(--primary-light);
   background: linear-gradient(135deg, rgba(139, 34, 82, 0.28), rgba(201, 168, 76, 0.16));
   color: var(--text-primary);
-  padding: 14px;
+  min-height: 52px;
+  padding: 14px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-transform: uppercase;
   letter-spacing: 2px;
+  line-height: 1;
   font-weight: 800;
+  transition: filter 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  box-shadow: 0 10px 24px rgba(139, 34, 82, 0.18);
+}
+
+.apply-couture:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 14px 30px rgba(139, 34, 82, 0.24);
 }
 
 .result-layout {
@@ -484,16 +515,20 @@
 
 .btn.primary:hover {
   background: var(--primary-light);
+  border-color: var(--primary-light);
   color: #fff;
+  box-shadow: 0 10px 24px rgba(139, 34, 82, 0.22);
 }
 
 .btn.outline {
   border: 1.5px solid var(--primary);
   color: var(--primary-light);
+  background: rgba(139, 34, 82, 0.08);
 }
 
 .btn.ghost {
-  background: rgba(169, 64, 104, 0.18);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
 }
 
@@ -501,6 +536,7 @@
   background: var(--gold);
   color: #1a0e00;
   border-color: var(--gold);
+  box-shadow: 0 10px 24px rgba(201, 168, 76, 0.18);
 }
 
 .pill {
