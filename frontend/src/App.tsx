@@ -14,6 +14,10 @@ import {
 } from 'react-router-dom';
 import { apiKeys as seedApiKeys, bundles, galleryItems, sarees } from './mock';
 import type { ApiKey, TryOnResult } from './types';
+import frontViewImage from './assets/Front View.png';
+import sideViewImage from './assets/Side View.png';
+import backViewImage from './assets/Back View.png';
+import palluViewImage from './assets/Pallu View.png';
 import './styles/theme.css';
 import './styles/ui.css';
 
@@ -399,6 +403,7 @@ function TryOnUploadPage() {
   const [stylistMode, setStylistMode] = useState<'autonomous' | 'describe'>('autonomous');
   const [progress, setProgress] = useState(12);
   const [isApplying, setIsApplying] = useState(false);
+  const [activeVariationLabel, setActiveVariationLabel] = useState('Front View');
 
   const selectedSaree = sarees.find((item) => item.id === selectedSareeId) || sarees[0];
 
@@ -429,9 +434,21 @@ function TryOnUploadPage() {
     { name: 'Waist Belt', place: 'Over saree pleats' },
   ];
 
+  const previewVariations = [
+    { label: 'Front View', imageUrl: frontViewImage },
+    { label: 'Side View', imageUrl: sideViewImage },
+    { label: 'Back View', imageUrl: backViewImage },
+    { label: 'Pallu View', imageUrl: palluViewImage },
+  ];
+
+  const activeVariation =
+    previewVariations.find((variation) => variation.label === activeVariationLabel) ||
+    previewVariations[0];
+
   const onApplyAiCouture = () => {
     if (isApplying) return;
 
+    setActiveVariationLabel('Front View');
     setIsApplying(true);
     setProgress(15);
     const timer = setInterval(() => {
@@ -580,16 +597,20 @@ function TryOnUploadPage() {
           </div>
           <img
             className="result-image"
-            src="https://images.unsplash.com/photo-1602810319428-019690571b5b?auto=format&fit=crop&w=900&q=80"
-            alt="AI drape output"
+            src={activeVariation.imageUrl}
+            alt={`${activeVariation.label} output`}
           />
           <div className="result-thumbs">
-            {[1, 2, 3].map((item) => (
-              <img
-                key={item}
-                src={selectedSaree.imageUrl}
-                alt="variation"
-              />
+            {previewVariations.map((variation) => (
+              <button
+                key={variation.label}
+                type="button"
+                className={`result-variant ${activeVariationLabel === variation.label ? 'active' : ''}`}
+                onClick={() => setActiveVariationLabel(variation.label)}
+              >
+                <img src={variation.imageUrl} alt={variation.label} />
+                <span>{variation.label}</span>
+              </button>
             ))}
           </div>
         </article>
