@@ -36,7 +36,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── Greeting Header ──────────────────────────────────────────────────────
+  // ─── Greeting Header (web-aligned: sp-nav + hero feel) ───────────────────────
 
   Widget _buildGreetingHeader(BuildContext context) {
     return Consumer2<AuthProvider, CreditProvider>(
@@ -45,14 +45,21 @@ class HomeScreen extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: AppColors.surface,
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(28),
               bottomRight: Radius.circular(28),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.04),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
             border: Border(
               bottom: BorderSide(
-                color: AppColors.divider,
+                color: AppColors.primary.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
@@ -74,13 +81,13 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         'Ready to drape beautifully today?',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
-                  // Credits Badge
                   GestureDetector(
                     onTap: () => context.push('/home/credits'),
                     child: Container(
@@ -89,8 +96,15 @@ class HomeScreen extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.gold.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(14),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.gold.withValues(alpha: 0.2),
+                            AppColors.goldLight.withValues(alpha: 0.12),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: AppColors.gold.withValues(alpha: 0.5),
                         ),
@@ -127,32 +141,38 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              // Search bar
               GestureDetector(
                 onTap: () => context.go('/explore'),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(32),
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: AppColors.divider,
+                      color: AppColors.primaryLight.withValues(alpha: 0.22),
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.06),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 13,
+                    vertical: 14,
                   ),
                   child: Row(
                     children: [
                       const Icon(
                         Icons.search_rounded,
                         color: AppColors.primaryLight,
-                        size: 20,
+                        size: 22,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Text(
-                        'Search saree styles...',
-                        style: const TextStyle(
+                        'Search sarees...',
+                        style: TextStyle(
                           color: AppColors.textHint,
                           fontSize: 14,
                         ),
@@ -250,7 +270,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── AI Draping Hero Card (Coming Soon) ──────────────────────────────────
+  // ─── AI Draping Hero Card (web: sp-step-card / glow-card style) ─────────────
 
   Widget _buildAIDrapingCard(BuildContext context) {
     return GestureDetector(
@@ -259,22 +279,42 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.15),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.surface,
+                AppColors.surfaceVariant.withValues(alpha: 0.4),
+              ],
             ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.8),
+                blurRadius: 0,
+                offset: const Offset(0, 1),
+              ),
+            ],
           ),
           child: Stack(
+            clipBehavior: Clip.none,
             children: [
               Positioned(
-                right: -20,
-                bottom: -20,
+                right: -16,
+                bottom: -16,
                 child: Icon(
                   Icons.auto_awesome,
-                  size: 130,
+                  size: 120,
                   color: AppColors.primary.withValues(alpha: 0.08),
                 ),
               ),
@@ -283,35 +323,15 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.gold.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.gold.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: const Text(
-                          '\u2728 AI Powered',
-                          style: TextStyle(
-                            color: AppColors.goldLight,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                      _sectionChip('✨ AI-POWERED TRY-ON'),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
-                          vertical: 4,
+                          vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.info.withValues(alpha: 0.15),
+                          color: AppColors.info.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: AppColors.info.withValues(alpha: 0.35),
@@ -339,44 +359,53 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Virtual Saree\nTry-On',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Try any saree style on your photo\nwith our AI — launching soon!',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
-                    ),
-                  ),
                   const SizedBox(height: 14),
+                  Text(
+                    'See Yourself in\nAny Saree, Instantly',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: AppColors.textPrimary,
+                          height: 1.15,
+                        ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Upload your photo, choose a saree, and watch AI create a photorealistic image.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
+                      horizontal: 18,
+                      vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceVariant.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(24),
+                      color: AppColors.surfaceVariant.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppColors.divider.withValues(alpha: 0.5),
+                        color: AppColors.divider.withValues(alpha: 0.6),
                       ),
                     ),
-                    child: const Text(
-                      '\u{1F512} Coming Soon',
-                      style: TextStyle(
-                        color: AppColors.textHint,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.lock_outline_rounded,
+                          size: 14,
+                          color: AppColors.textHint,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          'Coming Soon',
+                          style: TextStyle(
+                            color: AppColors.textHint,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -388,7 +417,29 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── Featured Sarees ──────────────────────────────────────────────────────
+  static Widget _sectionChip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primaryLight.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: AppColors.primaryLight,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  // ─── Featured Sarees (web: section-tag + section-title) ────────────────────
 
   Widget _buildFeaturedSarees(BuildContext context) {
     return Consumer<CatalogueProvider>(
@@ -399,47 +450,65 @@ class HomeScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Featured Sarees',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => context.go('/explore'),
-                    child: const Text(
-                      'See all',
-                      style: TextStyle(
-                        color: AppColors.primaryLight,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                  _sectionChip('BROWSE'),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Featured Sarees',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () => context.go('/explore'),
+                        child: const Text(
+                          'See all →',
+                          style: TextStyle(
+                            color: AppColors.primaryLight,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 14),
-            if (catalogue.isLoading)
-              const SizedBox(
-                height: 230,
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
-              )
-            else if (featured.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+            if (featured.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: SizedBox(
-                  height: 90,
+                  height: 120,
                   child: Center(
-                    child: Text(
-                      'No sarees available right now.',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'No sarees available right now.',
+                          style: TextStyle(color: AppColors.textSecondary),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (catalogue.isLoading) ...[
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -460,8 +529,17 @@ class HomeScreen extends StatelessWidget {
                         width: 148,
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.divider),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.divider.withValues(alpha: 0.8),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.04),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -469,7 +547,7 @@ class HomeScreen extends StatelessWidget {
                             Expanded(
                               child: ClipRRect(
                                 borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(16),
+                                  top: Radius.circular(20),
                                 ),
                                 child: saree.thumbnailUrl.isNotEmpty
                                     ? Image.network(
@@ -526,8 +604,8 @@ class HomeScreen extends StatelessWidget {
                                   Text(
                                     '₹${_formatK(saree.price)}',
                                     style: const TextStyle(
-                                      color: AppColors.primaryLight,
-                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.gold,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 13,
                                     ),
                                   ),
@@ -547,7 +625,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ─── Recent Try-Ons ───────────────────────────────────────────────────────
+  // ─── Recent Try-Ons (web: YOUR CREATIONS) ───────────────────────────────────
 
   Widget _buildRecentTryOns(BuildContext context) {
     return Consumer<GalleryProvider>(
@@ -558,47 +636,65 @@ class HomeScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Recent Try-Ons',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => context.go('/my-drapes'),
-                    child: const Text(
-                      'See all',
-                      style: TextStyle(
-                        color: AppColors.primaryLight,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                  _sectionChip('YOUR CREATIONS'),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Recent Try-Ons',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () => context.go('/my-drapes'),
+                        child: const Text(
+                          'See all →',
+                          style: TextStyle(
+                            color: AppColors.primaryLight,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 14),
-            if (gallery.isLoading)
-              const SizedBox(
-                height: 140,
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
-              )
-            else if (recent.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+            if (recent.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: SizedBox(
-                  height: 80,
+                  height: 100,
                   child: Center(
-                    child: Text(
-                      'No try-ons yet.',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'No try-ons yet.',
+                          style: TextStyle(color: AppColors.textSecondary),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (gallery.isLoading) ...[
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),

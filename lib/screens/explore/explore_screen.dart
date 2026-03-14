@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -38,21 +38,66 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Catalogue'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Search bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.primaryLight.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: const Text(
+                    'BROWSE',
+                    style: TextStyle(
+                      color: AppColors.primaryLight,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Saree Catalogue',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Explore our curated collection',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
               controller: _searchController,
-              onChanged: (v) =>
-                  context.read<CatalogueProvider>().setSearch(v),
+              onChanged: (v) {
+                setState(() {});
+                context.read<CatalogueProvider>().setSearch(v);
+              },
               style: const TextStyle(color: AppColors.textPrimary),
               decoration: InputDecoration(
                 hintText: 'Search sarees…',
@@ -69,25 +114,28 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.transparent,
+                fillColor: AppColors.surface,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                  borderSide:
-                      BorderSide(color: AppColors.primaryLight.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(
+                      color: AppColors.primaryLight.withValues(alpha: 0.22)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32),
-                  borderSide:
-                      BorderSide(color: AppColors.primaryLight.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(
+                      color: AppColors.primaryLight.withValues(alpha: 0.22)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                      color: AppColors.primaryLight, width: 1.5),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 10),
-
-          // Region filter chips
+          const SizedBox(height: 14),
           SizedBox(
-            height: 40,
+            height: 42,
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               scrollDirection: Axis.horizontal,
@@ -99,7 +147,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 final isSelected = isAll
                     ? _selectedRegion == null
                     : _selectedRegion == region;
-                return ChoiceChip(
+                return FilterChip(
                   label: Text(region),
                   selected: isSelected,
                   onSelected: (_) {
@@ -109,23 +157,28 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     context.read<CatalogueProvider>().setRegionFilter(
                         isAll ? null : region);
                   },
+                  selectedColor: AppColors.primary.withValues(alpha: 0.15),
+                  checkmarkColor: AppColors.primary,
+                  side: BorderSide(
+                    color: isSelected
+                        ? AppColors.primaryLight
+                        : AppColors.divider,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 );
               },
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
-          // Grid
+          // Grid — show empty state immediately when no data; only add small loading hint while fetching
           Expanded(
             child: Consumer<CatalogueProvider>(
               builder: (context, catalogue, _) {
-                if (catalogue.isLoading) {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                          color: AppColors.primary));
-                }
                 if (catalogue.assets.isEmpty) {
-                  return const _EmptyView();
+                  return _EmptyView(isLoading: catalogue.isLoading);
                 }
                 return GridView.builder(
                   padding: const EdgeInsets.symmetric(
@@ -171,22 +224,29 @@ class _AssetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/home/virtual-draping',
-          extra: asset),
+      onTap: () => context.push('/home/virtual-draping', extra: asset),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: AppColors.divider.withValues(alpha: 0.8),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Thumbnail
             Expanded(
               child: ClipRRect(
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                    const BorderRadius.vertical(top: Radius.circular(20)),
                 child: asset.thumbnailUrl.isNotEmpty
                     ? Image.network(
                         asset.thumbnailUrl,
@@ -197,9 +257,8 @@ class _AssetCard extends StatelessWidget {
                     : _PlaceholderImage(),
               ),
             ),
-            // Info
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -213,37 +272,46 @@ class _AssetCard extends StatelessWidget {
                       fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     '${asset.region} • ${asset.fabricType}',
                     style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 11),
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                    ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         '₹${_formatPrice(asset.price)}',
                         style: const TextStyle(
-                          color: AppColors.primaryLight,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                          color: AppColors.gold,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.primaryLight.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: const Text(
-                          'Try On',
+                          'Try On →',
                           style: TextStyle(
-                              color: AppColors.primaryLight,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600),
+                            color: AppColors.primaryLight,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -271,7 +339,9 @@ class _PlaceholderImage extends StatelessWidget {
 }
 
 class _EmptyView extends StatelessWidget {
-  const _EmptyView();
+  const _EmptyView({this.isLoading = false});
+
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -290,6 +360,17 @@ class _EmptyView extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textSecondary),
           ),
+          if (isLoading) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+                strokeWidth: 2,
+              ),
+            ),
+          ],
         ],
       ),
     );

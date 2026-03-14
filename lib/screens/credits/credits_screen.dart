@@ -28,10 +28,31 @@ class CreditsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 _HowItWorksCard(),
                 const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: const Text(
+                    'PRICING',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.08,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 Text(
-                  'Buy Credits',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  'Choose your credit pack',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
                       ),
                 ),
                 const SizedBox(height: 4),
@@ -112,59 +133,90 @@ class _BalanceCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.surface,
+            AppColors.surfaceVariant.withValues(alpha: 0.5),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.3), width: 1),
+          color: AppColors.primary.withValues(alpha: 0.15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.gold.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.stars_rounded,
-                    color: AppColors.gold, size: 22),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.18),
               ),
-              const SizedBox(width: 10),
-              const Text(
-                'Your Credit Balance',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+            ),
+            child: const Text(
+              'WALLET',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.08,
               ),
-            ],
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          const Text(
+            'Available credits',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                '$balance',
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 52,
-                  fontWeight: FontWeight.bold,
-                  height: 1,
+              ShaderMask(
+                blendMode: BlendMode.srcIn,
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [
+                    Color(0xFFD7B14A),
+                    Color(0xFFF0CF69),
+                    AppColors.primary,
+                  ],
+                ).createShader(bounds),
+                child: Text(
+                  '$balance',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    height: 1,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               const Padding(
                 padding: EdgeInsets.only(bottom: 8),
                 child: Text(
-                  'CREDITS',
+                  'credits',
                   style: TextStyle(
-                    color: AppColors.goldLight,
-                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -32,12 +32,11 @@ class _MyDrapesScreenState extends State<MyDrapesScreen> {
       ),
       body: Consumer<GalleryProvider>(
         builder: (context, gallery, _) {
-          if (gallery.isLoading) {
-            return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
-          }
           if (gallery.isEmpty) {
-            return _EmptyGallery(onExplore: () => context.go('/explore'));
+            return _EmptyGallery(
+              onExplore: () => context.go('/explore'),
+              isLoading: gallery.isLoading,
+            );
           }
           return RefreshIndicator(
             onRefresh: gallery.load,
@@ -304,8 +303,10 @@ class _ImageViewerScreenState extends State<_ImageViewerScreen> {
 // ── Empty State ───────────────────────────────────────────────────────────────
 
 class _EmptyGallery extends StatelessWidget {
+  const _EmptyGallery({required this.onExplore, this.isLoading = false});
+
   final VoidCallback onExplore;
-  const _EmptyGallery({required this.onExplore});
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -332,14 +333,26 @@ class _EmptyGallery extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: onExplore,
-            icon: const Icon(Icons.explore_outlined),
-            label: const Text('Browse Catalogue'),
-            style:
-                ElevatedButton.styleFrom(minimumSize: const Size(200, 48)),
-          ),
+          if (isLoading) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+                strokeWidth: 2,
+              ),
+            ),
+          ] else ...[
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: onExplore,
+              icon: const Icon(Icons.explore_outlined),
+              label: const Text('Browse Catalogue'),
+              style:
+                  ElevatedButton.styleFrom(minimumSize: const Size(200, 48)),
+            ),
+          ],
         ],
       ),
     );

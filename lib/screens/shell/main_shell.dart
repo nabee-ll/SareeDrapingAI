@@ -52,40 +52,106 @@ class _MainShellState extends State<MainShell> {
       },
       child: Scaffold(
         body: widget.navigationShell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: widget.navigationShell.currentIndex,
-          onDestinationSelected: (index) {
-            widget.navigationShell.goBranch(
-              index,
-              initialLocation: index == widget.navigationShell.currentIndex,
-            );
-          },
-          backgroundColor: AppColors.surface,
-          indicatorColor: AppColors.primary.withValues(alpha: 0.25),
-          surfaceTintColor: Colors.transparent,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined, color: AppColors.textHint),
-              selectedIcon: Icon(Icons.home, color: AppColors.primaryLight),
-              label: AppStrings.home,
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 12,
+                offset: const Offset(0, -2),
+              ),
+            ],
+            border: Border(
+              top: BorderSide(
+                color: AppColors.primary.withValues(alpha: 0.08),
+              ),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.explore_outlined, color: AppColors.textHint),
-              selectedIcon: Icon(Icons.explore, color: AppColors.primaryLight),
-              label: AppStrings.explore,
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _NavItem(
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home_rounded,
+                    label: AppStrings.home,
+                    isSelected: widget.navigationShell.currentIndex == 0,
+                    onTap: () => widget.navigationShell.goBranch(0, initialLocation: true),
+                  ),
+                  _NavItem(
+                    icon: Icons.explore_outlined,
+                    activeIcon: Icons.explore_rounded,
+                    label: AppStrings.explore,
+                    isSelected: widget.navigationShell.currentIndex == 1,
+                    onTap: () => widget.navigationShell.goBranch(1, initialLocation: true),
+                  ),
+                  _NavItem(
+                    icon: Icons.checkroom_outlined,
+                    activeIcon: Icons.checkroom_rounded,
+                    label: AppStrings.myDrapes,
+                    isSelected: widget.navigationShell.currentIndex == 2,
+                    onTap: () => widget.navigationShell.goBranch(2, initialLocation: true),
+                  ),
+                  _NavItem(
+                    icon: Icons.person_outline_rounded,
+                    activeIcon: Icons.person_rounded,
+                    label: AppStrings.profile,
+                    isSelected: widget.navigationShell.currentIndex == 3,
+                    onTap: () => widget.navigationShell.goBranch(3, initialLocation: true),
+                  ),
+                ],
+              ),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.checkroom_outlined, color: AppColors.textHint),
-              selectedIcon:
-                  Icon(Icons.checkroom, color: AppColors.primaryLight),
-              label: AppStrings.myDrapes,
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outlined, color: AppColors.textHint),
-              selectedIcon: Icon(Icons.person, color: AppColors.primaryLight),
-              label: AppStrings.profile,
-            ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? AppColors.primary : AppColors.textHint;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(isSelected ? activeIcon : icon, color: color, size: 26),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

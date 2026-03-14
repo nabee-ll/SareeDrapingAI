@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -66,36 +66,56 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       children: [
         Container(
-          width: 76,
-          height: 76,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.18),
+            ),
+          ),
+          child: const Text(
+            'MEMBER ACCESS',
+            style: TextStyle(
+              color: AppColors.primary,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.08,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          width: 80,
+          height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.primary, AppColors.primaryDark],
+              colors: [AppColors.primary, AppColors.primaryLight],
             ),
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withValues(alpha: 0.35),
-                blurRadius: 20,
+                blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
             ],
           ),
-          child: const Icon(Icons.auto_awesome, size: 36, color: Colors.white),
+          child: const Icon(Icons.auto_awesome_rounded, size: 40, color: Colors.white),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 20),
         Text(
-          'Welcome Back',
+          'Welcome back',
           style: Theme.of(context)
               .textTheme
-              .displayMedium
+              .headlineMedium
               ?.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(
-          'Sign in to Drape & Glow',
+          'Sign in to continue your saree try-ons and saved looks.',
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -148,11 +168,16 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'or sign in with email',
+            'or',
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
-                ?.copyWith(color: AppColors.textHint),
+                ?.copyWith(
+                  color: AppColors.textHint,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.12,
+                ),
           ),
         ),
         const Expanded(child: Divider(color: AppColors.divider)),
@@ -309,14 +334,14 @@ class _OAuthButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: isLoading ? null : onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFD8DDE6)),
         ),
         child: isLoading
             ? const Center(

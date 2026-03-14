@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class OnboardingProvider extends ChangeNotifier {
   String? _selectedLanguage;
@@ -27,10 +27,8 @@ class OnboardingProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get bodyTypes => _bodyTypes;
   List<Map<String, dynamic>> get experienceLevels => _experienceLevels;
 
-  Future<void> loadOptions() async {
-    _isLoading = true;
-    notifyListeners();
-
+  /// Load options synchronously so UI never shows a loading spinner for this.
+  void loadOptions() {
     _languages = [
       {'code': 'en', 'name': 'English'},
       {'code': 'hi', 'name': 'Hindi'},
@@ -64,8 +62,6 @@ class OnboardingProvider extends ChangeNotifier {
       {'code': 'intermediate', 'name': 'Intermediate', 'description': 'Know the basics'},
       {'code': 'expert', 'name': 'Expert', 'description': 'Drape with confidence'},
     ];
-
-    _isLoading = false;
     notifyListeners();
   }
 
