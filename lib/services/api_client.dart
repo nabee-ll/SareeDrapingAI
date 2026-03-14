@@ -50,7 +50,7 @@ class ApiClient {
 
   // ── Public Methods ────────────────────────────────────────────────────────
 
-  static const _timeout = Duration(seconds: 3);
+  static const _timeout = Duration(seconds: 15);
 
   Future<ApiResponse> get(String path) async {
     final res = await http

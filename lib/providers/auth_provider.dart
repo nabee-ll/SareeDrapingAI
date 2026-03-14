@@ -93,12 +93,19 @@ class AuthProvider extends ChangeNotifier {
     _state = AuthState.loading;
     _errorMessage = null;
     notifyListeners();
-    final result = await _authService.register(
-      name: name,
-      email: email,
-      password: password,
-    );
-    return _handleResult(result);
+    try {
+      final result = await _authService.register(
+        name: name,
+        email: email,
+        password: password,
+      );
+      return _handleResult(result);
+    } catch (_) {
+      _state = AuthState.error;
+      _errorMessage = 'Registration failed. Please check your connection and try again.';
+    }
+    notifyListeners();
+    return false;
   }
 
   // ── Google OAuth ──────────────────────────────────────────────────────────

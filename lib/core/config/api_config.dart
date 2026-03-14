@@ -5,7 +5,9 @@ class ApiConfig {
   // Replace with production URL before deploying.
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:3000', // Android emulator → localhost
+    // Use WiFi IP so real devices can reach the local backend.
+    // 10.0.2.2 only works on the Android emulator; 10.196.244.24 is this machine's WiFi IP.
+    defaultValue: 'http://10.196.244.24:3000',
   );
 
   // Auth

@@ -8,18 +8,18 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.light(
         primary: AppColors.primary,
-        secondary: AppColors.primaryLight,
+        secondary: AppColors.gold,
         surface: AppColors.surface,
+        onSurface: AppColors.textPrimary,
         error: AppColors.error,
         onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        onSurface: AppColors.textPrimary,
+        onSecondary: AppColors.textPrimary,
       ),
       scaffoldBackgroundColor: AppColors.background,
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
+      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.light().textTheme).copyWith(
         displayLarge: GoogleFonts.raleway(
           fontSize: 34,
           fontWeight: FontWeight.bold,
@@ -127,7 +127,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.secondaryLight,
+        fillColor: AppColors.surface,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         border: OutlineInputBorder(

@@ -619,9 +619,64 @@ function TryOnSection({ showToast }: { showToast: (msg: string, type?: string) =
    CATALOGUE SECTION
    ═══════════════════════════════════════════════════ */
 function CatalogueSection() {
+  const fabricOptions = ['All', 'Silk', 'Cotton', 'Georgette'];
+  const regionOptions = ['All', 'Tamil Nadu', 'Uttar Pradesh', 'Gujarat', 'Maharashtra', 'Odisha'];
   const [fabric, setFabric] = useState('All');
   const [region, setRegion] = useState('All');
   const [search, setSearch] = useState('');
+  const [openFilter, setOpenFilter] = useState<'fabric' | 'region' | null>(null);
+  const fabricFilterRef = useRef<HTMLDivElement>(null);
+  const regionFilterRef = useRef<HTMLDivElement>(null);
+
+  const fabricCounts = useMemo(() => {
+    const counts: Record<string, number> = Object.fromEntries(fabricOptions.map((option) => [option, 0]));
+    const normalizedSearch = search.trim().toLowerCase();
+    sarees.forEach((item) => {
+      if (region !== 'All' && item.region !== region) return;
+      if (normalizedSearch && !item.name.toLowerCase().includes(normalizedSearch)) return;
+      counts.All += 1;
+      counts[item.fabric] = (counts[item.fabric] || 0) + 1;
+    });
+    return counts;
+  }, [fabricOptions, region, search]);
+
+  const regionCounts = useMemo(() => {
+    const counts: Record<string, number> = Object.fromEntries(regionOptions.map((option) => [option, 0]));
+    const normalizedSearch = search.trim().toLowerCase();
+    sarees.forEach((item) => {
+      if (fabric !== 'All' && item.fabric !== fabric) return;
+      if (normalizedSearch && !item.name.toLowerCase().includes(normalizedSearch)) return;
+      counts.All += 1;
+      counts[item.region] = (counts[item.region] || 0) + 1;
+    });
+    return counts;
+  }, [fabric, regionOptions, search]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        fabricFilterRef.current?.contains(target)
+        || regionFilterRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setOpenFilter(null);
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpenFilter(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     return sarees.filter((item) => {
@@ -646,16 +701,76 @@ function CatalogueSection() {
             <input id="catalog-search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sarees..." className="sp-search" />
           </div>
           <div className="filter-control">
-            <label htmlFor="catalog-fabric">Fabric</label>
-            <select id="catalog-fabric" value={fabric} onChange={(e) => setFabric(e.target.value)}>
-              <option>All</option><option>Silk</option><option>Cotton</option><option>Georgette</option>
-            </select>
+            <label id="catalog-fabric-label">Fabric</label>
+            <div className="filter-dropdown" ref={fabricFilterRef}>
+              <button
+                type="button"
+                className={`filter-dropdown-trigger ${openFilter === 'fabric' ? 'open' : ''}`}
+                aria-expanded={openFilter === 'fabric'}
+                aria-haspopup="listbox"
+                aria-labelledby="catalog-fabric-label"
+                onClick={() => setOpenFilter((current) => (current === 'fabric' ? null : 'fabric'))}
+              >
+                <span className="filter-trigger-value">{fabric}</span>
+                <span className="filter-trigger-meta">{fabricCounts[fabric] || 0} styles</span>
+              </button>
+              {openFilter === 'fabric' && (
+                <div className="filter-dropdown-menu" role="listbox" aria-label="Fabric options">
+                  {fabricOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      role="option"
+                      aria-selected={fabric === option}
+                      className={`filter-dropdown-option ${fabric === option ? 'selected' : ''}`}
+                      onClick={() => {
+                        setFabric(option);
+                        setOpenFilter(null);
+                      }}
+                    >
+                      <span className="filter-option-main">{option}</span>
+                      <span className="filter-option-meta">{fabricCounts[option] || 0} sarees</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="filter-control">
-            <label htmlFor="catalog-region">Region</label>
-            <select id="catalog-region" value={region} onChange={(e) => setRegion(e.target.value)}>
-              <option>All</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Gujarat</option><option>Maharashtra</option><option>Odisha</option>
-            </select>
+            <label id="catalog-region-label">Region</label>
+            <div className="filter-dropdown" ref={regionFilterRef}>
+              <button
+                type="button"
+                className={`filter-dropdown-trigger ${openFilter === 'region' ? 'open' : ''}`}
+                aria-expanded={openFilter === 'region'}
+                aria-haspopup="listbox"
+                aria-labelledby="catalog-region-label"
+                onClick={() => setOpenFilter((current) => (current === 'region' ? null : 'region'))}
+              >
+                <span className="filter-trigger-value">{region}</span>
+                <span className="filter-trigger-meta">{regionCounts[region] || 0} styles</span>
+              </button>
+              {openFilter === 'region' && (
+                <div className="filter-dropdown-menu" role="listbox" aria-label="Region options">
+                  {regionOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      role="option"
+                      aria-selected={region === option}
+                      className={`filter-dropdown-option ${region === option ? 'selected' : ''}`}
+                      onClick={() => {
+                        setRegion(option);
+                        setOpenFilter(null);
+                      }}
+                    >
+                      <span className="filter-option-main">{option}</span>
+                      <span className="filter-option-meta">{regionCounts[option] || 0} sarees</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="catalog-grid stagger">
