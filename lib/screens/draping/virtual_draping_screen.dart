@@ -30,6 +30,13 @@ const List<Map<String, String>> _accessoryIdeas = [
 
 const List<String> _viewLabels = ['Front View', 'Side View', 'Back View', 'Pallu View'];
 
+const List<String> _viewAssets = [
+  'assets/images/front_view.png',
+  'assets/images/side_view.png',
+  'assets/images/back_view.png',
+  'assets/images/pallu_view.png',
+];
+
 class VirtualDrapingScreen extends StatefulWidget {
   final SareeAsset? preselectedAsset;
 
@@ -1071,25 +1078,18 @@ class _VirtualDrapingScreenState extends State<VirtualDrapingScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadii.md),
       child: Container(
-        height: 280,
+        height: 380,
         width: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF19181F).withValues(alpha: 0.96),
-              const Color(0xFF0F0F13).withValues(alpha: 0.96),
-            ],
-          ),
+          color: const Color(0xFF0F0F13),
+          borderRadius: BorderRadius.circular(AppRadii.md),
         ),
         child: Stack(
-          alignment: Alignment.center,
+          fit: StackFit.expand,
           children: [
-            Icon(
-              Icons.checkroom_rounded,
-              size: 80,
-              color: AppColors.primaryLight.withValues(alpha: 0.4),
+            Image.asset(
+              _viewAssets[_activeViewIndex],
+              fit: BoxFit.cover,
             ),
             Positioned(
               bottom: 12,
@@ -1150,20 +1150,20 @@ class _VirtualDrapingScreenState extends State<VirtualDrapingScreen> {
                   Container(
                     height: 56,
                     decoration: BoxDecoration(
-                      color: isActive
-                          ? AppColors.primary.withValues(alpha: 0.2)
-                          : AppColors.surfaceVariant.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: isActive ? AppColors.primaryLight : AppColors.divider,
                         width: isActive ? 2 : 1,
                       ),
                     ),
-                    child: Center(
-                      child: Icon(
-                        Icons.person_rounded,
-                        size: 28,
-                        color: isActive ? AppColors.primaryLight : AppColors.textHint,
+                    clipBehavior: Clip.antiAlias,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(9),
+                      child: Image.asset(
+                        _viewAssets[i],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 56,
                       ),
                     ),
                   ),
