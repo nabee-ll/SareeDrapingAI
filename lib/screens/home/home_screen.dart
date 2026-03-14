@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -44,19 +44,17 @@ class HomeScreen extends StatelessWidget {
         final name = auth.user?.fullName?.split(' ').first ?? 'User';
         return Container(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primaryDark,
-                Color(0xFF2A0A18),
-                AppColors.secondary,
-              ],
-            ),
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(28),
               bottomRight: Radius.circular(28),
+            ),
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.divider,
+                width: 1,
+              ),
             ),
           ),
           child: Column(
@@ -71,14 +69,14 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         'Namaste, $name! \u{1F64F}',
                         style: Theme.of(context).textTheme.headlineLarge
-                            ?.copyWith(color: Colors.white),
+                            ?.copyWith(color: AppColors.textPrimary),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Ready to drape beautifully today?',
                         style: Theme.of(
                           context,
-                        ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+                        ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -134,10 +132,10 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => context.go('/explore'),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(
-                      color: AppColors.primaryLight.withValues(alpha: 0.3),
+                      color: AppColors.divider,
                     ),
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -154,8 +152,8 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(width: 10),
                       Text(
                         'Search saree styles...',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
+                        style: const TextStyle(
+                          color: AppColors.textHint,
                           fontSize: 14,
                         ),
                       ),
@@ -263,18 +261,10 @@ class HomeScreen extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primaryDark.withValues(alpha: 0.7),
-                const Color(0xFF2A0A18).withValues(alpha: 0.8),
-                AppColors.secondary.withValues(alpha: 0.7),
-              ],
-            ),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.25),
+              color: AppColors.primary.withValues(alpha: 0.15),
             ),
           ),
           child: Stack(
@@ -353,7 +343,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'Virtual Saree\nTry-On',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
+                      color: AppColors.textPrimary,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       height: 1.2,
@@ -363,7 +353,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'Try any saree style on your photo\nwith our AI — launching soon!',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.45),
+                      color: AppColors.textSecondary,
                       fontSize: 13,
                     ),
                   ),

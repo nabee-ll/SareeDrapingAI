@@ -60,15 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppColors.secondaryDark,
-              Color(0xFF1A0810),
-              AppColors.primaryDark,
-            ],
-          ),
+          color: AppColors.background,
         ),
         child: AnimatedBuilder(
           animation: _controller,
@@ -110,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen>
                     style: Theme.of(context)
                         .textTheme
                         .displayMedium
-                        ?.copyWith(color: Colors.white),
+                        ?.copyWith(color: AppColors.textPrimary),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -119,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Text(
                     AppStrings.appTagline,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white70,
+                          color: AppColors.textSecondary,
                         ),
                   ),
                 ),

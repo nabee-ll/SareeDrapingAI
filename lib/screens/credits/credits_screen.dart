@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/credit_model.dart';
@@ -112,11 +112,7 @@ class _BalanceCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primaryDark, Color(0xFF2A0A18), AppColors.secondary],
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
             color: AppColors.primary.withValues(alpha: 0.3), width: 1),
@@ -139,7 +135,7 @@ class _BalanceCard extends StatelessWidget {
               const Text(
                 'Your Credit Balance',
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: AppColors.textSecondary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -153,7 +149,7 @@ class _BalanceCard extends StatelessWidget {
               Text(
                 '$balance',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 52,
                   fontWeight: FontWeight.bold,
                   height: 1,

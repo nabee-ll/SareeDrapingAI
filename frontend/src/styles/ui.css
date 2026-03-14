@@ -1618,6 +1618,8 @@ textarea:focus {
   padding: 0;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .saree-card:hover {
@@ -1663,9 +1665,12 @@ textarea:focus {
 }
 
 .saree-card-content {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   padding: 1rem 1.25rem 1.25rem;
+  text-align: left;
+  flex: 1;
 }
 
 .saree-card-content h3 {
@@ -1677,6 +1682,12 @@ textarea:focus {
 
 .saree-card:hover .saree-card-content h3 {
   color: var(--primary);
+}
+
+.saree-card-content .btn {
+  width: 100%;
+  justify-self: stretch;
+  margin-top: auto;
 }
 
 .saree-card img,

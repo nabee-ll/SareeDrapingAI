@@ -26,10 +26,10 @@ class AppColors {
   static const Color textHint = Color(0xFF9A93A3);
   static const Color divider = Color(0xFFE8E3DC);
 
-  // Status colors
-  static const Color success = Color(0xFF4CAF50);
+  // Status colors (aligned with web)
+  static const Color success = Color(0xFF059669);
   static const Color error = Color(0xFFEF5350);
-  static const Color warning = Color(0xFFFFA726);
+  static const Color warning = Color(0xFFF59E0B);
   static const Color info = Color(0xFF0A9396);
 
   // Subscription tier colors
