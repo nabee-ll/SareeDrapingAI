@@ -79,6 +79,7 @@ class _GalleryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () => _openImageViewer(context, item),
       onLongPress: () => _confirmDelete(context, item),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -129,8 +130,31 @@ class _GalleryCard extends StatelessWidget {
                 ),
               ),
             ),
+            // Tap hint: small zoom icon in top-right corner
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.45),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.zoom_in_rounded,
+                    size: 18, color: Colors.white),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _openImageViewer(BuildContext context, GalleryItem item) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _ImageViewerScreen(item: item),
       ),
     );
   }
@@ -160,6 +184,120 @@ class _GalleryCard extends StatelessWidget {
     if (confirmed == true && context.mounted) {
       context.read<GalleryProvider>().deleteItem(item.id);
     }
+  }
+}
+
+// ── Full-Screen Image Viewer ─────────────────────────────────────────────────
+
+class _ImageViewerScreen extends StatefulWidget {
+  final GalleryItem item;
+  const _ImageViewerScreen({required this.item});
+
+  @override
+  State<_ImageViewerScreen> createState() => _ImageViewerScreenState();
+}
+
+class _ImageViewerScreenState extends State<_ImageViewerScreen> {
+  final TransformationController _controller = TransformationController();
+  double _scale = 1.0;
+
+  static const double _minScale = 1.0;
+  static const double _maxScale = 4.0;
+  static const double _step = 0.75;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _zoomIn() {
+    final next = (_scale + _step).clamp(_minScale, _maxScale);
+    _setScale(next);
+  }
+
+  void _zoomOut() {
+    final next = (_scale - _step).clamp(_minScale, _maxScale);
+    _setScale(next);
+  }
+
+  void _resetZoom() {
+    _setScale(1.0);
+  }
+
+  void _setScale(double scale) {
+    _controller.value = Matrix4.identity()..scale(scale);
+    setState(() => _scale = scale);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title = widget.item.sareenName ?? 'Try-On Result';
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.zoom_out_rounded),
+            tooltip: 'Zoom Out',
+            onPressed: _scale > _minScale ? _zoomOut : null,
+          ),
+          // Zoom level badge
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${(_scale * 100).round()}%',
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.zoom_in_rounded),
+            tooltip: 'Zoom In',
+            onPressed: _scale < _maxScale ? _zoomIn : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Reset Zoom',
+            onPressed: _scale != 1.0 ? _resetZoom : null,
+          ),
+        ],
+      ),
+      body: InteractiveViewer(
+        transformationController: _controller,
+        minScale: _minScale,
+        maxScale: _maxScale,
+        onInteractionUpdate: (_) {
+          final s = _controller.value.getMaxScaleOnAxis();
+          if ((s - _scale).abs() > 0.01) setState(() => _scale = s);
+        },
+        child: Center(
+          child: widget.item.resultImageUrl.isNotEmpty
+              ? Image.network(
+                  widget.item.resultImageUrl,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.broken_image,
+                    size: 80,
+                    color: Colors.white38,
+                  ),
+                )
+              : const Icon(
+                  Icons.image_outlined,
+                  size: 80,
+                  color: Colors.white38,
+                ),
+        ),
+      ),
+    );
   }
 }
 

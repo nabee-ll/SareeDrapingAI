@@ -1,57 +1,69 @@
 :root {
-  --primary: #8b2252;
-  --primary-light: #a94068;
-  --primary-dark: #5c0a2d;
+  /* Color Palette matching drape-and-glow-ui.html */
+  --primary: #C9257C;
+  --primary-light: #E84393;
+  --primary-dark: #A01858;
+  --secondary: #D4AF37;
+  --accent: #006D77;
+  --accent-light: #0A9396;
+  --background: #FAF6F1;
+  --surface: #FFFFFF;
+  --dark: #1A1A2E;
+  --text-primary: #2D2D3A;
+  --text-secondary: #6B6B7B;
+  --border: #E8E3DC;
 
-  --secondary: #121212;
-  --secondary-light: #1e1e1e;
-  --secondary-dark: #0a0a0a;
-
-  --gold: #c9a84c;
-  --gold-light: #e8d08c;
-
-  --background: #0e0e0e;
-  --surface: #1a1a1a;
-  --surface-variant: #2a2025;
-  --text-primary: #f5f0f2;
-  --text-secondary: #b0a3a8;
-  --text-hint: #6b5d63;
-  --divider: #2d2528;
-
-  --success: #4caf50;
+  --success: #059669;
+  --warning: #F59E0B;
   --error: #ef5350;
-  --warning: #ffa726;
-  --info: #42a5f5;
+  --info: #0A9396;
 
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
+  --gradient-silk: linear-gradient(180deg, rgba(250, 246, 241, 0) 0%, rgba(250, 246, 241, 1) 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Radii */
   --radius-sm: 12px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
   --radius-xl: 24px;
-
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.42), 0 1px 0 rgba(255,255,255,0.04) inset;
-  --gloss-top: linear-gradient(180deg, rgba(255,255,255,0.065) 0%, transparent 55%);
 }
 
 * {
   box-sizing: border-box;
-  cursor: default;
-  user-select: none;
-}
-
-html,
-body,
-#root {
   margin: 0;
   padding: 0;
-  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: radial-gradient(circle at 15% 0%, #2a0a18 0%, transparent 38%),
-    radial-gradient(circle at 85% 0%, #251015 0%, transparent 33%),
-    var(--background);
+  font-family: var(--font-body);
+  background: var(--background);
   color: var(--text-primary);
-  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 a {
@@ -68,6 +80,21 @@ button {
 input,
 textarea,
 select {
-  cursor: text;
-  user-select: text;
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--dark);
+}
+
+::selection {
+  background: rgba(201, 37, 124, 0.2);
+  color: var(--dark);
 }
