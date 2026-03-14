@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BrowserRouter,
   Link,
@@ -404,6 +404,66 @@ function TryOnUploadPage() {
   const [progress, setProgress] = useState(12);
   const [isApplying, setIsApplying] = useState(false);
   const [activeVariationLabel, setActiveVariationLabel] = useState('Front View');
+  const frameRef = useRef<HTMLDivElement>(null);
+  const dragStateRef = useRef({ originX: 0, originY: 0, panStartX: 0, panStartY: 0, zoom: 1 });
+
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const ZOOM_STEP = 0.5;
+  const ZOOM_MIN = 1;
+  const ZOOM_MAX = 3;
+
+  const clampPan = (x: number, y: number, zoom: number) => {
+    const fw = frameRef.current?.clientWidth ?? 600;
+    const fh = frameRef.current?.clientHeight ?? 500;
+    const maxX = (fw * (zoom - 1)) / 2;
+    const maxY = (fh * (zoom - 1)) / 2;
+    return {
+      x: Math.max(-maxX, Math.min(maxX, x)),
+      y: Math.max(-maxY, Math.min(maxY, y)),
+    };
+  };
+
+  const handleZoomIn = () => {
+    const next = Math.min(+(zoomLevel + ZOOM_STEP).toFixed(1), ZOOM_MAX);
+    setZoomLevel(next);
+    setPanOffset((pan) => clampPan(pan.x, pan.y, next));
+  };
+  const handleZoomOut = () => {
+    const next = Math.max(+(zoomLevel - ZOOM_STEP).toFixed(1), ZOOM_MIN);
+    setZoomLevel(next);
+    setPanOffset((pan) => clampPan(pan.x, pan.y, next));
+  };
+  const handleZoomReset = () => { setZoomLevel(1); setPanOffset({ x: 0, y: 0 }); };
+
+  const handleFrameMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (zoomLevel <= 1) return;
+    e.preventDefault();
+    dragStateRef.current = {
+      originX: e.clientX,
+      originY: e.clientY,
+      panStartX: panOffset.x,
+      panStartY: panOffset.y,
+      zoom: zoomLevel,
+    };
+    setIsDragging(true);
+
+    const onMove = (ev: MouseEvent) => {
+      const { originX, originY, panStartX, panStartY, zoom } = dragStateRef.current;
+      const rawX = panStartX + (ev.clientX - originX);
+      const rawY = panStartY + (ev.clientY - originY);
+      setPanOffset(clampPan(rawX, rawY, zoom));
+    };
+    const onUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
 
   const selectedSaree = sarees.find((item) => item.id === selectedSareeId) || sarees[0];
 
@@ -595,13 +655,51 @@ function TryOnUploadPage() {
             </div>
             <strong>{progress}%</strong>
           </div>
-          <div className="result-image-frame">
+          <div
+            ref={frameRef}
+            className="result-image-frame"
+            onMouseDown={handleFrameMouseDown}
+            style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+          >
             <img
               className="result-image"
               src={activeVariation.imageUrl}
               alt={`${activeVariation.label} output`}
-              style={{ objectPosition: activeVariation.objectPosition }}
+              style={{
+                objectPosition: activeVariation.objectPosition,
+                transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.2s ease',
+                userSelect: 'none',
+                pointerEvents: 'none',
+              }}
             />
+            <div className="zoom-controls">
+              <button
+                className="zoom-btn"
+                title="Zoom Out"
+                disabled={zoomLevel <= ZOOM_MIN}
+                onClick={handleZoomOut}
+              >
+                −
+              </button>
+              <button
+                className="zoom-btn zoom-label"
+                title="Reset Zoom"
+                disabled={zoomLevel === 1}
+                onClick={handleZoomReset}
+              >
+                {Math.round(zoomLevel * 100)}%
+              </button>
+              <button
+                className="zoom-btn"
+                title="Zoom In"
+                disabled={zoomLevel >= ZOOM_MAX}
+                onClick={handleZoomIn}
+              >
+                +
+              </button>
+            </div>
           </div>
           <div className="result-thumbs">
             {previewVariations.map((variation) => (
@@ -609,7 +707,7 @@ function TryOnUploadPage() {
                 key={variation.label}
                 type="button"
                 className={`result-variant ${activeVariationLabel === variation.label ? 'active' : ''}`}
-                onClick={() => setActiveVariationLabel(variation.label)}
+                onClick={() => { setActiveVariationLabel(variation.label); setZoomLevel(1); setPanOffset({ x: 0, y: 0 }); }}
               >
                 <img
                   src={variation.imageUrl}
