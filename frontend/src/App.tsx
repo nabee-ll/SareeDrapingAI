@@ -123,8 +123,6 @@ function LandingPage() {
       <header className="land-nav">
         <span className="land-logo">Drape &amp; Glow</span>
         <nav className="land-links">
-          <Link to="/home">Catalogue</Link>
-          <Link to="/try-on/upload">AI Try-On</Link>
           <Link to="/login">Login</Link>
         </nav>
         <Link className="btn primary small" to="/signup">Get Started</Link>
@@ -284,6 +282,9 @@ function LoginPage() {
           Login
         </button>
       </form>
+      <button className="btn outline" onClick={() => navigate('/home')}>
+        Continue with Google (Mocked)
+      </button>
       <p className="muted">
         New here? <Link to="/signup">Create account</Link>
       </p>
