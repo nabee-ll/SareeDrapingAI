@@ -2790,6 +2790,7 @@ textarea:focus {
    ═══════════════════════════════════════════════════ */
 .single-page {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* ── NAV ── */
@@ -2893,7 +2894,6 @@ textarea:focus {
   flex-direction: column;
   gap: 3rem;
   position: relative;
-  overflow: hidden;
 }
 
 /* ── HERO AMBIENT / PARTICLES BG ── */
@@ -2901,7 +2901,7 @@ textarea:focus {
   content: '';
   position: absolute;
   top: -60px;
-  right: -15%;
+  right: calc((100vw - 100%) / -2);
   width: 600px;
   height: 600px;
   border-radius: 50%;
