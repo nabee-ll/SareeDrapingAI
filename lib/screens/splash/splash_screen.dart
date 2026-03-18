@@ -36,7 +36,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
+    // Navigate as soon as splash is visible (~1.2s). No fixed 3s wait — show next screen quickly.
+    Future.delayed(const Duration(milliseconds: 1200), () {
       if (mounted) {
         final auth = context.read<AuthProvider>();
         if (auth.isAuthenticated) {
